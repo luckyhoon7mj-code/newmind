@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>마음 충전 탐험대</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Jua&family=Noto+Sans+KR:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fffaf0;--ink:#222;--sub:#666;--green:#e3f6e8;--green2:#9be0ad;--yellow:#fff3c4;--yellow2:#ffd84d;
+ --purple:#efe6ff;--purple2:#c9b2ff;--blue:#e1eeff;--blue2:#9fc4ff;--red:#d33a2c;--red-bg:#ffe6e2}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased}
+.wrap{max-width:640px;margin:0 auto;padding:20px 16px 110px}
+header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.logo{font-family:"Jua",sans-serif;font-size:24px;white-space:nowrap}
+@media(max-width:460px){.logo{font-size:19px;letter-spacing:-.5px}.keys{font-size:13px;padding:4px 8px}}
+.logo span{background:linear-gradient(transparent 60%,var(--yellow2) 60%)}
+.keys{font-weight:800;border:3px solid var(--ink);border-radius:999px;padding:4px 12px;background:#fff;font-size:15px;white-space:nowrap}
+.demo{display:none;background:var(--ink);color:#fff;border-radius:12px;padding:6px 12px;font-size:13px;margin-bottom:12px;text-align:center}
+.card{border:3px solid var(--ink);border-radius:22px;padding:22px 20px;background:#fff;margin-bottom:14px}
+.card.g{background:var(--green)}.card.y{background:var(--yellow)}.card.p{background:var(--purple)}.card.b{background:var(--blue)}.card.r{background:var(--red-bg);border-color:var(--red)}
+.step{display:inline-block;font-size:13px;font-weight:800;border:2.5px solid var(--ink);border-radius:999px;padding:1px 10px;background:#fff;margin-bottom:8px}
+h2{font-family:"Jua",sans-serif;font-size:26px;font-weight:400;line-height:1.3;margin-bottom:6px}
+p{font-size:16px}
+.muted{color:var(--sub);font-size:14px}
+.btn{all:unset;box-sizing:border-box;cursor:pointer;display:block;width:100%;text-align:center;font-weight:800;font-size:18px;padding:14px;border:3px solid var(--ink);border-radius:16px;background:var(--yellow2);margin-top:14px}
+.btn:active{transform:translateY(2px)}
+.btn.ghost{background:#fff}
+.btn:disabled{opacity:.4;cursor:default}
+.btn:focus-visible,.pick:focus-visible,.cat:focus-visible{outline:3px solid #3b74b8;outline-offset:2px}
+.axis{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.pick{all:unset;box-sizing:border-box;cursor:pointer;border:3px solid var(--ink);border-radius:16px;background:#fff;padding:10px 12px;text-align:center}
+.pick b{display:block;font-size:24px;font-family:"Jua",sans-serif;font-weight:400}
+.pick small{font-size:13px;color:var(--sub);line-height:1.35;display:block}
+.pick.on{background:var(--green2)}
+textarea{width:100%;min-height:120px;border:3px solid var(--ink);border-radius:16px;padding:12px;font:inherit;font-size:16px;resize:vertical;margin-top:10px;background:#fff}
+textarea:focus{outline:3px solid var(--yellow2)}
+.count{text-align:right;font-size:13px;color:var(--sub)}
+.map{display:flex;justify-content:space-between;align-items:flex-end;background:#fffaf2;border:3px solid var(--ink);border-radius:26px;padding:34px 12px 6px;margin-bottom:12px;position:relative}
+.map .st{position:relative;display:flex;flex-direction:column;align-items:center;transition:all .3s}
+.map .st svg{width:38px;height:38px;display:block}
+.map .st small{font-size:10.5px;font-weight:800;color:#8a7a70;margin-top:1px;white-space:nowrap}
+.map .st.todo svg{filter:grayscale(1);opacity:.35}.map .st.todo small{opacity:.45}
+.map .st.now svg{transform:scale(1.18)}.map .st.now small{color:var(--ink)}
+.map .st.done:after{content:"✓";position:absolute;right:-4px;top:-4px;width:14px;height:14px;line-height:14px;text-align:center;font-size:9px;font-weight:900;color:#fff;border-radius:50%;background:#f39bb0}
+.map .st .walker{position:absolute;top:-34px;animation:hop 1s ease-in-out infinite}
+@keyframes hop{50%{transform:translateY(-4px)}}
+.map .path{flex:1;height:0;border-top:4px dotted #f1c6cf;margin:0 3px 24px}
+.pop{animation:pop .5s ease}
+.hello{display:flex;flex-direction:column;align-items:center;gap:10px;margin:6px 0 16px}
+.hello .kk{animation:bob 2.2s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-8px) rotate(-4deg)}}
+.bubble.big{font-size:18px;line-height:1.6;text-align:center;font-weight:700}
+.more{margin-top:12px}.more summary{cursor:pointer;font-weight:800;padding:10px 14px;border:2.5px dashed var(--ink);border-radius:14px;background:#fff;list-style:none;text-align:center}.more summary::-webkit-details-marker{display:none}.more[open] summary{margin-bottom:6px}
+.ticket{background:#fffdf5;border:3px dashed var(--ink);border-radius:18px;padding:16px;margin-top:14px;line-height:1.7;position:relative}
+.ticket h3{font-size:18px;margin-bottom:4px}
+.ticket .stamp{position:absolute;right:12px;top:10px;font-size:30px;transform:rotate(12deg)}
+.story{background:#fff;border:3px solid var(--ink);border-radius:16px;padding:12px 14px;margin:10px 0;line-height:1.6}
+.story b{font-family:"Jua",sans-serif;font-size:18px}
+.chap{display:flex;gap:10px;align-items:flex-start;background:#fff;border:2.5px solid var(--ink);border-radius:14px;padding:10px;margin:8px 0}
+.chap .em{font-size:30px}
+.chap.lock{background:#eee;color:#888}.chap.lock .em{filter:grayscale(1);opacity:.4}
+.gauge{height:14px;border:2.5px solid var(--ink);border-radius:999px;background:#fff;overflow:hidden;margin:6px 0}
+.gauge i{display:block;height:100%;background:var(--yellow2)}
+.recap:empty{display:none}
+.dex{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:8px}
+.dex div{background:#fff;border:2.5px solid var(--ink);border-radius:14px;text-align:center;padding:8px 4px;font-size:12px;font-weight:700;line-height:1.3}
+.dex div .em{font-size:30px;display:block}
+.dex div.lock{background:#eee;color:#999}
+.dex div.lock .em{filter:grayscale(1) brightness(.2);opacity:.35}
+.confetti{position:fixed;top:-40px;font-size:26px;pointer-events:none;z-index:50;animation:fall 1.6s linear forwards}
+@keyframes fall{to{transform:translateY(110vh) rotate(540deg)}}
+.newchar{background:#fff7e6;border:3px dashed #c98a12;border-radius:16px;padding:10px 12px;margin-top:10px;font-weight:800;text-align:center}
+.ico{display:inline-block;width:1.25em;height:1.25em;vertical-align:-.28em;line-height:0}.ico svg{width:100%;height:100%;display:block}
+.guide{display:flex;gap:10px;align-items:flex-end;margin:4px 0 12px}
+.bubble{position:relative;background:#fff;border:3px solid var(--ink);border-radius:18px;padding:10px 14px;font-weight:700;font-size:15px;line-height:1.5}
+.bubble::before{content:"";position:absolute;left:-12px;bottom:14px;border:6px solid transparent;border-right:8px solid var(--ink)}
+.charcard{animation:pop .5s ease;display:flex;gap:12px;align-items:center;background:#fff;border:3px solid var(--ink);border-radius:18px;padding:12px;margin-top:12px}
+.charcard .em{font-size:46px;line-height:1;width:64px;height:64px;display:flex;align-items:center;justify-content:center;background:var(--yellow);border:2.5px solid var(--ink);border-radius:50%}
+.charcard b{font-family:"Jua",sans-serif;font-weight:400;font-size:21px;display:block}
+.vs{display:grid;grid-template-columns:1fr auto 1fr;gap:6px;align-items:center;margin-top:10px}
+.vs .side{background:#fff;border:2.5px solid var(--ink);border-radius:16px;padding:10px 8px;text-align:center}
+.vs .side .em{font-size:40px;line-height:1.1}
+.vs .side b{display:block;font-family:"Jua",sans-serif;font-weight:400;font-size:16px}
+.vs .side small{font-size:12.5px;color:var(--sub);line-height:1.35;display:block;margin-top:2px}
+.chip.on{background:var(--green2)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.chip{all:unset;box-sizing:border-box;cursor:pointer;padding:6px 12px;border-radius:999px;border:2px solid var(--ink);background:#fff;font-weight:700;font-size:14px}
+.chip:active{background:var(--yellow2)}
+.imsg{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:6px;font-weight:700}
+.imsg input{flex:1;min-width:140px;border:3px solid var(--ink);border-radius:12px;padding:8px 10px;font:inherit;font-size:16px}
+.quick{display:flex;align-items:center;gap:8px;margin-top:12px;font-weight:800;font-size:15px}
+.quick input{flex:1;min-width:0;border:3px solid var(--ink);border-radius:12px;padding:8px 10px;font:inherit;font-size:16px;text-transform:uppercase;letter-spacing:2px}
+.tip{background:#fff;border:2px dashed var(--sub);border-radius:12px;padding:8px 12px;font-size:14px;margin-top:10px}
+.cats{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.cat{all:unset;box-sizing:border-box;cursor:pointer;border:3px solid var(--ink);border-radius:14px;background:#fff;padding:10px;font-weight:800;text-align:center;font-size:15px}
+.row{display:flex;gap:10px;align-items:flex-start;background:#fff;border:2.5px solid var(--ink);border-radius:14px;padding:12px;margin-top:10px}
+.row .ic{font-size:24px;line-height:1.2}
+.row b{display:block;font-size:13px;color:var(--sub)}
+.row .k{font-family:"Jua",sans-serif;font-size:20px;line-height:1.4}
+.badge{text-align:center;font-size:56px;animation:pop .5s ease}
+@keyframes pop{0%{transform:scale(.3)}70%{transform:scale(1.15)}100%{transform:scale(1)}}
+.tel{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
+.tel div{background:var(--red);color:#fff;border-radius:14px;text-align:center;padding:8px 4px;font-weight:800;font-size:24px}
+.tel small{display:block;font-size:12px;font-weight:600}
+.hide{display:none}
+.loading{text-align:center;font-size:18px;font-weight:800;padding:30px 0}
+.dots::after{content:"";animation:d 1.2s infinite}
+@keyframes d{0%{content:""}33%{content:"."}66%{content:".."}100%{content:"..."}}
+.sos{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:3px solid var(--ink);padding:10px 16px}
+.sos-in{max-width:640px;margin:0 auto;display:flex;gap:10px;align-items:center}
+.sos button{all:unset;cursor:pointer;background:#3b74b8;color:#fff;font-weight:800;border-radius:12px;padding:10px 14px;white-space:nowrap;border:3px solid var(--ink)}
+.sos small{font-size:12px;color:var(--sub);line-height:1.4}
+</style>
+</head>
+<body>
+<script>
+/* ==========================================================
+   📌 선생님 설정 (여기만 바꾸면 돼요)
+   ========================================================== */
+const CONFIG = {
+  mode: "student",  // 기본은 학생용. 주소 끝에 #demo 를 붙이면 교사 시연용으로 열려요
+  studentAI: true,  // true = 학생용도 AI가 판단 / false = 낱말 규칙으로 판단
+  apiUrl: "https://script.google.com/macros/s/AKfycbyS2Aj1UIbkJDY_iE30nWL1eiiqsjEl6r98LmQvQ4X4xfO934VNZURhsbYn76OVjNdh/exec"        // 구글 앱스 스크립트 웹앱 주소(.../exec). 넣으면 기록이 시트에 쌓여요
+};
+</script>
+
+<div class="wrap">
+  <header>
+    <div class="logo">🔋 <span>마음 충전 탐험대</span></div>
+    <div style="display:flex;gap:6px"><button class="keys" id="dexBtn" style="cursor:pointer">📖 0/16</button><button class="keys" id="keys" style="cursor:pointer">🔋 0번</button></div>
+  </header>
+  <div class="map" id="map"></div>
+  <div class="demo" id="demo">🎤 AI 시연 모드 · 선생님 시연용이에요</div>
+
+  <!-- 1. 키키가 말 걸기 -->
+  <section id="s-intro">
+    <div class="card g">
+      <div class="hello"><span class="kk" data-size="110" data-mood="wink"></span>
+        <div class="bubble big">안녕! 나는 마음 마을 충전 요정 <b>키키</b>야 👋<br>혹시 친구랑 <b>무슨 일</b> 있었어?<br>나한테 살짝 알려 줄래?</div></div>
+      <div class="cats" id="sitCats"></div>
+      <p class="muted" style="text-align:center;margin-top:10px">✋ 이름은 몰라도 돼. 친구는 그냥 '친구'라고 할게!</p>
+      <div class="tip" id="aiNotice" style="display:none">🤖 키키는 <b>AI</b>의 도움을 받아 이야기해요. AI도 틀릴 수 있으니, 중요한 일은 꼭 선생님과 이야기해요. 내가 쓴 글은 저장되지 않아요.</div>
+      <div class="story" id="introStory" style="cursor:pointer"></div>
+    </div>
+  </section>
+
+  <!-- 2. 무슨 일? -->
+  <section id="s-write" class="hide">
+    <div class="card g">
+      <span class="step" id="sitStep">💬 무슨 일이 있었나요?</span>
+      <div class="guide"><span class="kk" data-size="52"></span><div class="bubble" id="sitBubble"></div></div>
+      <div id="evBox">
+        <p style="font-weight:800">① 친구가 어떻게 했나요?</p>
+        <div class="chips" id="sitEv"></div>
+        <p style="margin-top:14px;font-weight:800">② 어디서 있었던 일이에요? <span class="muted">(안 골라도 돼요)</span></p>
+        <div class="chips" id="sitPlace"></div>
+        <p style="margin-top:14px;font-weight:800">③ 더 하고 싶은 말 <span class="muted">(안 써도 돼요)</span></p>
+        <textarea id="txt" maxlength="200" style="min-height:70px" placeholder="이름 대신 '친구'라고 써 주세요"></textarea>
+        <div class="tip" id="sitPreview" style="display:none"></div>
+      </div>
+      <button class="btn" id="writeDone" disabled>이때 내 마음은? →</button>
+      <button class="btn ghost" id="sitBack">← 다른 일 고를래요</button>
+    </div>
+  </section>
+
+  <!-- 2. 탐험 카드 -->
+  <section id="s-card" class="hide">
+    <div class="card g">
+      <span class="step">3 · 나는 어떤 사람일까?</span>
+      <div class="tip recap"></div>
+      <div class="guide"><span class="kk" data-size="52"></span><div class="bubble">그런 일이 있었구나. 먼저 <b>나</b>를 알아보자! 나는 평소에 어떤 쪽에 가까워?</div></div>
+      <div id="meQuick" class="tip" style="display:none;text-align:center"></div>
+      <div id="meFull">
+      <p class="muted">MBTI를 알면 바로 적고, 모르면 아래 질문 4개에 답해요. 정답은 없어요.</p>
+      <div class="quick">MBTI를 알아요 <input id="meType" maxlength="4" placeholder="예: INFJ" autocomplete="off"></div>
+      <div id="axes"></div>
+      <button class="btn" id="cardDone" disabled>이번엔 친구 차례 →</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2-1. 친구 카드 -->
+  <section id="s-friend" class="hide">
+    <div class="card b">
+      <span class="step">4 · 친구는 어떤 사람일까?</span>
+      <div class="tip recap"></div>
+      <div class="guide"><span class="kk" data-size="52" data-mood="wink"></span><div class="bubble">이제 그 <b>친구</b>를 떠올려 봐. 친구는 평소에 어떤 모습이야?</div></div>
+      <p class="muted">짐작이어도 괜찮아요. 친구를 판단하려는 게 아니라, 친구 입장을 상상해 보려는 거예요. 이름은 적지 않아요.</p>
+      <div class="quick">친구 MBTI를 알아요 <input id="frType" maxlength="4" placeholder="예: ESTP" autocomplete="off"></div>
+      <div id="axesF"></div>
+      <button class="btn" id="fDone" disabled>두 사람 마음 살펴보기 →</button>
+      <button class="btn ghost" id="fSkip">친구는 잘 모르겠어요 →</button>
+    </div>
+  </section>
+
+
+
+  <!-- 3-1. 상황 종류 고르기 (학생용) -->
+  <section id="s-cat" class="hide">
+    <div class="card y">
+      <span class="step">5 · 마음 살펴보기</span>
+      <h2 id="catTitle">내 상황은 어디에 가까울까요?</h2>
+      <div class="cats" id="cats"></div>
+    </div>
+  </section>
+
+  <!-- 3-2. AI 질문 (시연용) -->
+  <section id="s-ask" class="hide">
+    <div class="card y">
+      <span class="step">5 · 안내자의 질문</span>
+      <h2 id="askQ"></h2>
+      <textarea id="ans" maxlength="300" placeholder="여기에 답을 적어요"></textarea>
+      <button class="btn" id="ansDone">답하기 →</button>
+    </div>
+  </section>
+
+  <section id="s-loading" class="hide"><div class="card y"><div class="loading"><span class="kk" data-size="60" data-mood="wink"></span><br>💭 키키가 내 마음과 친구 마음을 살펴보고 있어요<span class="dots"></span></div></div></section>
+
+  <!-- 4. 작전 -->
+  <section id="s-result" class="hide">
+    <div class="card y">
+      <span class="step">5 · 마음 살펴보기</span>
+      <div class="guide"><span class="kk" data-size="56"></span><div class="bubble" id="resKiki">천천히 읽어 봐. 너도, 친구도 다 이유가 있었을 거야.</div></div>
+      <div id="res"></div>
+    </div>
+    <div class="card p">
+      <span class="step">6 · 나-전달법으로 마음 정리 ⭐</span>
+      <h2>내 마음을 나-전달법으로 써 볼까요?</h2>
+      <p class="muted">키키가 고른 일로 문장을 미리 만들어 뒀어요. 마음에 들면 바로 충전! 바꾸고 싶으면 '문장 바꾸기'를 눌러요. 친구에게 꼭 보내지 않아도 되고, 저장되지 않아요.</p>
+      <div class="tip" id="mPreview" style="display:none"></div>
+      <button class="btn" id="meDone">마음 충전하기 🔋</button>
+      <div id="meMsg"></div>
+      <details class="more" id="editBox"><summary>✏️ 문장 바꾸기</summary>
+      <p style="margin-top:12px;font-weight:800">🎬 있었던 일</p>
+      <div class="chips" id="evChips"></div>
+      <div class="imsg"><span>네가</span><input id="m1" maxlength="60" placeholder="위에서 골라요" readonly><span>때,</span></div>
+      <p style="margin-top:12px;font-weight:800">💗 내 마음</p>
+      <div class="imsg"><span>나는</span><input id="m2" maxlength="30" placeholder="아래에서 골라요" readonly><span>마음이 들었어.</span></div>
+      <div class="chips" id="feelChips"></div>
+      <p style="margin-top:12px;font-weight:800">🙏 내 바람</p>
+      <div class="imsg"><input id="m3" maxlength="60" placeholder="아래에서 골라요" readonly><span>좋겠어.</span></div>
+      <div class="chips" id="wishChips"></div>
+      <button class="chip" id="selfWrite" style="margin-top:12px">✏️ 직접 쓸래요</button>
+      </details>
+    </div>
+    <button class="btn ghost" id="noteBtn">🙋 그래도 선생님과 이야기하고 싶어요</button>
+    <button class="btn ghost" id="again">↺ 다른 일도 살펴보기 (처음으로)</button>
+  </section>
+
+  <!-- 선생님께 마음 쪽지 -->
+  <section id="s-note" class="hide">
+    <div class="card b">
+      <span class="step">✉️ 선생님께 마음 쪽지</span>
+      <div class="guide"><span class="kk" data-size="52"></span><div class="bubble">좋아! 선생님이 네 이야기를 잘 들을 수 있게, 쪽지를 먼저 만들어 보자.</div></div>
+      <p style="font-weight:800">① 지금 마음은 얼마나 힘들어?</p>
+      <div class="chips" id="noteTemp"><button class="chip" data-nt="🙂 조금">🙂 조금</button><button class="chip" data-nt="😟 많이">😟 많이</button><button class="chip" data-nt="😢 아주 많이">😢 아주 많이</button></div>
+      <p style="margin-top:14px;font-weight:800">② 언제 이야기하면 좋을까?</p>
+      <div class="chips" id="noteWhen"><button class="chip" data-nw="쉬는 시간">쉬는 시간</button><button class="chip" data-nw="점심시간">점심시간</button><button class="chip" data-nw="방과 후">방과 후</button><button class="chip" data-nw="선생님이 편할 때">선생님이 편할 때</button></div>
+      <p style="margin-top:14px;font-weight:800">③ 누구와 이야기할까?</p>
+      <div class="chips" id="noteWho"><button class="chip" data-nh="나 혼자">나 혼자</button><button class="chip" data-nh="친구랑 같이">친구랑 같이</button></div>
+      <div class="tip" id="noteNow" style="display:none">💛 아주 많이 힘들면 기다리지 않아도 돼. <b>지금 바로</b> 선생님께 "이야기하고 싶어요"라고 말해도 괜찮아.</div>
+      <button class="btn" id="noteMake" disabled>쪽지 만들기 ✉️</button>
+      <div id="noteCard"></div>
+      <button class="btn ghost" id="noteBack">← 돌아가기</button>
+    </div>
+  </section>
+
+  <!-- 마음 마을 이야기 -->
+  <section id="s-story" class="hide">
+    <div class="card y">
+      <span class="step">🏘️ 마음 마을 이야기</span>
+      <div class="guide"><span class="kk" data-size="52"></span><div class="bubble">마음을 충전할 때마다 마을이 하나씩 환해져! 지금 어디까지 왔는지 볼래?</div></div>
+      <div id="storyList"></div>
+      <button class="btn ghost" id="storyBack">← 돌아가기</button>
+    </div>
+  </section>
+
+  <!-- 마음 도감 -->
+  <section id="s-dex" class="hide">
+    <div class="card p">
+      <span class="step">📖 마음 도감</span>
+      <div class="guide"><span class="kk" data-size="52" data-mood="wink"></span><div class="bubble">마음을 이해한 친구 캐릭터가 여기에 모여! 16마리를 다 모아 볼까?</div></div>
+      <div class="dex" id="dexGrid"></div>
+      <button class="btn ghost" id="dexBack">← 돌아가기</button>
+    </div>
+  </section>
+
+  <!-- 선생님 설정 (주소 끝에 #setup) -->
+  <section id="s-setup" class="hide">
+    <div class="card b">
+      <span class="step">⚙️ 선생님 설정</span>
+      <h2>AI 연결하기 (업스테이지 Solar)</h2>
+      <p class="muted">키는 이 기기의 브라우저에만 저장돼요. 학생 기기에는 넣지 마세요.</p>
+      <p style="margin-top:12px;font-weight:800">API 키</p>
+      <input id="keyIn" type="password" autocomplete="off" placeholder="up_로 시작하는 키를 붙여 넣어요" style="width:100%;border:3px solid var(--ink);border-radius:14px;padding:12px;font:inherit;margin-top:6px">
+      <p style="margin-top:12px;font-weight:800">모델 이름</p>
+      <input id="modelIn" type="text" value="solar-pro4" style="width:100%;border:3px solid var(--ink);border-radius:14px;padding:12px;font:inherit;margin-top:6px">
+      <button class="btn" id="keySave">저장하고 연결 시험하기</button>
+      <button class="btn ghost" id="keyDel">키 지우기</button>
+      <div id="keyMsg" style="margin-top:12px"></div>
+      <button class="btn ghost" data-go="s-intro">← 처음 화면으로</button>
+    </div>
+  </section>
+
+  <!-- 선생님과 이야기하기 -->
+  <section id="s-help" class="hide">
+    <div class="card b">
+      <h2>🧑‍🏫 선생님과 함께 이야기해요</h2>
+      <p>혼자 견디지 않아도 돼요. 이런 일은 <b>담임선생님이 함께 살펴보고 도와줄 수 있어요.</b> 말하는 건 고자질이 아니라 나를 지키는 일이에요.</p>
+      <p style="margin-top:12px;font-weight:800">선생님께 이렇게 말해 봐요</p>
+      <div class="row"><div class="ic">🗣️</div><div><b>직접 말하기</b>쉬는 시간이나 끝나고 "선생님, 이야기하고 싶은 게 있어요"라고 말해요.</div></div>
+      <div class="row"><div class="ic">✉️</div><div><b>쪽지로 알리기</b>말하기 어려우면 쪽지나 상담 신청함에 "이야기하고 싶어요"라고만 적어 내도 돼요.</div></div>
+      <div class="row"><div class="ic">📱</div><div><b>이 화면 보여 주기</b>무슨 말을 할지 모르겠으면 이 화면을 선생님께 보여 줘요.</div></div>
+      <div class="row"><div class="ic">🔑</div><div><b>이렇게 시작해 봐요</b><div class="k">"요즘 친구 관계 때문에 힘든 일이 있어요. 이야기할 시간이 있을까요?"</div></div></div>
+      <div id="urgentBox" class="card r hide" style="margin:14px 0 0;padding:14px 16px">
+        <p style="font-weight:800">선생님을 만날 수 없는 밤이나 주말에 마음이 너무 힘들면</p>
+        <div class="tel" style="grid-template-columns:1fr 1fr"><div><small>청소년 상담</small>1388</div><div><small>자살예방 상담</small>109</div></div>
+        <p class="muted" style="margin-top:8px">집에 계신 어른에게도 꼭 이야기해요.</p>
+      </div>
+      <p class="muted" style="margin-top:12px">이 화면에 쓴 글은 저장되지 않아요.</p>
+      <button class="btn ghost" id="helpBack">처음으로</button>
+    </div>
+  </section>
+</div>
+
+
+<script>
+/* ---------- 내용 ---------- */
+const AXES=[
+  ["E","I","쉬는 시간에 나는?",{E:"친구들과 이야기하며 노는 게 좋아요",I:"조용히 혼자 쉬는 게 좋아요"}],
+  ["S","N","새로운 걸 배울 때 나는?",{S:"직접 해 보고 예시를 보는 게 좋아요",N:"왜 그런지 상상해 보는 게 좋아요"}],
+  ["T","F","친구가 고민을 말하면 나는?",{T:"해결 방법부터 생각해요",F:"친구 마음부터 살펴요"}],
+  ["J","P","모둠 활동을 할 때 나는?",{J:"계획을 먼저 세우는 게 편해요",P:"하면서 정하는 게 편해요"}]
+];
+const STRENGTH={
+  E:"생각을 말로 꺼내며 분위기를 밝게 만드는 힘이 있어요.",
+  I:"깊이 생각한 뒤 말하는 신중함이 있어요.",
+  S:"있었던 일을 차근차근 정확하게 살피는 힘이 있어요.",
+  N:"새로운 방법을 떠올리는 상상력이 있어요.",
+  T:"상황을 차분하게 따져 보는 힘이 있어요.",
+  F:"친구의 마음을 잘 알아차리는 따뜻함이 있어요.",
+  J:"계획을 세우고 끝까지 해내는 힘이 있어요.",
+  P:"상황이 바뀌어도 유연하게 맞추는 힘이 있어요."
+};
+/* 상황 종류: [아이콘, 이름, 기준 성향, 마음 알아주기, {성향별 작전}, 마음 열쇠 문장] */
+const CATS=[
+  ["💬","의견 차이",0,"생각이 다르면 답답하고 내 의견이 묻히는 것 같아 속상하죠.",
+    {E:"내 의견을 말한 뒤 '너는 어떻게 생각해?'라고 물어 친구 생각도 들어 봐요.",I:"모둠 활동 전에 내 의견을 포스트잇에 한 줄 적어 두고, 차례가 오면 읽어 봐요."},
+    "내 의견이 바로 넘어갔을 때 나는 조금 서운했어. 내 생각도 한 번 들어 주면 좋겠어.","내 의견에서 꼭 지키고 싶은 부분은 무엇이고, 양보할 수 있는 부분은 무엇일까요?"],
+  ["⚡","다툼",2,"친구와 다투고 나면 마음이 무겁고 계속 생각나죠.",
+    {T:"누가 맞는지 따지기 전에 친구가 어떤 마음이었는지 먼저 물어봐요.",F:"속상한 마음이 가라앉을 때까지 잠깐 쉬었다가, 내 마음을 차분히 말해 봐요."},
+    "아까 서로 큰 소리를 냈을 때 나는 마음이 많이 불편했어. 잠깐 쉬었다가 다시 이야기하면 좋겠어.","그때 내가 정말 바랐던 건 이기는 것이었을까요, 이해받는 것이었을까요?"],
+  ["🥺","서운함",2,"기대한 만큼 친구가 알아주지 않으면 서운한 마음이 들죠.",
+    {T:"서운한 이유를 한 가지로 정리해서 친구에게 짧게 말해 봐요.",F:"서운한 마음을 참기만 하지 말고, 친구에게 부드럽게 알려 줘요."},
+    "네가 그렇게 했을 때 나는 서운한 마음이 들었어. 다음엔 나도 함께하면 좋겠어.","내가 친구에게 바랐던 건 무엇이었나요? 친구는 그걸 알고 있었을까요?"],
+  ["🌀","오해",1,"내 뜻과 다르게 전해지면 억울하고 답답하죠.",
+    {S:"언제, 어떤 말 때문에 오해가 생겼는지 있었던 일을 차근차근 이야기해 봐요.",N:"내가 원래 하고 싶었던 뜻을 쉬운 예를 들어 다시 설명해 봐요."},
+    "내 말이 다르게 전해졌을 때 나는 답답했어. 내가 하고 싶었던 말을 한 번 들어 주면 좋겠어.","친구에게 내 말은 어떻게 들렸을까요? 내가 진짜 하고 싶었던 말은 무엇이었나요?"],
+  ["🎤","발표·말하기",0,"많은 사람 앞에서 말할 때 떨리는 건 누구나 그래요.",
+    {E:"말이 빨라지지 않게 첫 문장만 천천히 연습해 봐요.",I:"말할 내용을 세 줄로 적어 두고, 친한 친구 앞에서 한 번 미리 말해 봐요."},
+    "내가 앞에서 말할 때 나는 많이 떨려. 끝까지 들어 주면 힘이 날 것 같아.","떨리는 마음 뒤에 있는 내 바람은 무엇일까요?"],
+  ["🤝","새 친구 사귀기",0,"새 친구에게 먼저 다가가는 건 용기가 필요한 일이에요.",
+    {E:"같이 할 수 있는 놀이나 활동을 먼저 제안해 봐요.",I:"친구가 좋아하는 것을 하나 찾아서 그것에 대해 질문해 봐요."},
+    "쉬는 시간에 혼자 있을 때 나는 조금 외로웠어. 같이 놀자고 해 주면 정말 좋겠어.","나는 어떤 친구가 되고 싶고, 친구에게 무엇을 바라나요?"],
+  ["🕊️","화해",3,"화해하고 싶은 마음이 든 것 자체가 멋진 용기예요.",
+    {J:"언제, 어디서 이야기할지 정하고 할 말을 미리 적어 봐요.",P:"쉬는 시간처럼 편한 때에 가볍게 먼저 말을 걸어 봐요."},
+    "그때 일이 계속 생각날 때 나는 마음이 무거웠어. 우리 다시 잘 지내면 좋겠어.","화해하고 나면 무엇이 달라졌으면 좋겠나요?"],
+  ["❓","잘 모르겠음",0,"어떤 마음인지 정리가 잘 안 될 때도 있어요.",
+    {E:"믿을 수 있는 친구나 선생님에게 지금 마음을 이야기해 봐요.",I:"지금 드는 마음을 단어 세 개로 적어 보면 정리가 쉬워져요."},
+    "요즘 나는 마음이 좀 복잡해. 내 이야기를 들어 주면 좋겠어.","지금 내 마음에 이름을 붙인다면 어떤 낱말일까요?"]
+];
+/* 상황 추천 규칙: 글 속 낱말로 가까운 상황을 찾아요 (CATS 순서와 같아요) */
+const HINTS=[
+  /의견|생각이\s*달|모둠|회의|정하|무시|내\s*말을?\s*안/,
+  /싸웠|싸움|다퉜|다툼|화났|화가|짜증|소리\s*질|밀었/,
+  /서운|섭섭|안\s*끼워|빼고|나만|안\s*불러|기다렸는데/,
+  /오해|그런\s*뜻|잘못\s*알|착각|그런\s*게\s*아닌|억울/,
+  /발표|앞에서|떨려|떨렸|긴장|말하기|부끄/,
+  /새\s*친구|친해지|친구가\s*없|전학|혼자\s*놀|말\s*걸/,
+  /화해|사과|미안|다시\s*친하|잘\s*지내고/
+];
+function guessCat(t){
+  let best=-1,score=0;
+  HINTS.forEach((re,i)=>{const m=(t.match(new RegExp(re.source,"g"))||[]).length;if(m>score){score=m;best=i}});
+  return best;
+}
+/* 16가지 성향 캐릭터: [이모지, 이름, 어떤 친구, 갈등할 때 모습, 마음이 다치기 쉬운 때, 다가가는 법, 말버릇, 속마음] */
+const TYPES={"ISTJ": ["🐢", "꼼꼼한 거북이", "약속과 규칙을 잘 지키는 믿음직한 친구예요.", "속상해도 바로 말하기보다 무엇이 잘못됐는지 차근차근 따져 봐요. 무표정이 기본이라 화난 줄 오해받기도 해요.", "약속이 갑자기 바뀌거나 대충 넘어갈 때 마음이 불편해지기 쉬워요.", "있었던 일을 차분하게 순서대로 말해 주면 잘 들어 줘요.", "약속은 약속이야.", "😐 (화난 거 아니야. 생각 정리 중이야.)"], "ISFJ": ["🐻", "다정한 곰", "친구를 조용히 챙겨 주는, 이른바 '인간 천사' 같은 친구예요.", "서운해도 분위기가 깨질까 봐 꾹 참는 편이에요. 괜찮다고 말해도 속으로는 마음이 쓰이고 있을 수 있어요.", "내가 챙겨 준 마음을 몰라줄 때 서운함이 쌓이기 쉬워요.", "부드럽게 '괜찮아?' 하고 먼저 물어봐 주면 마음을 열어요.", "괜찮아, 내가 할게.", "사실 조금 서운했어…"], "INFJ": ["🦉", "마음 읽는 부엉이", "다른 사람의 마음을 깊이 헤아리는 친구예요.", "속상하면 겉으로 드러내기보다 혼자 오래 생각해요. 꾹 참다가 조용히 거리를 두는 건 마음을 정리하는 시간일 수 있어요.", "내 진심을 몰라준다고 느낄 때 마음이 깊이 다치기 쉬워요.", "천천히, 진심을 담아 이야기하면 마음을 열어요.", "(속으로) 다 이유가 있겠지.", "내 마음을 알아줬으면 좋겠어."], "INTJ": ["🦅", "멀리 보는 독수리", "계획을 세우고 끝까지 해내는 똑똑한 친구예요.", "감정보다 해결 방법을 먼저 생각해서 말이 짧고 단호하게 들릴 수 있어요. 차갑게 대하려는 뜻은 아닐 수 있어요.", "계획에 없던 일이 생기거나 내 생각을 들어 보지도 않을 때 답답해지기 쉬워요.", "이유를 들어 차분하게 설명하면 잘 받아들여요.", "계획대로 하자.", "같이 잘하고 싶어서 그래."], "ISTP": ["🐱", "쿨한 고양이", "조용하지만 문제를 척척 해결하는 친구예요.", "다툼이 생기면 길게 말하기보다 잠시 혼자 있고 싶어 해요. 대답이 짧은 건 무관심이 아니라 거리가 필요한 것일 수 있어요.", "간섭을 많이 받거나 감정을 계속 캐물을 때 피곤해지기 쉬워요.", "짧고 담백하게 말하고, 생각할 시간을 주면 좋아요.", "그럴 수도 있지.", "지금은 혼자 생각할 시간이 필요해."], "ISFP": ["🐰", "말랑한 토끼", "마음이 여리고 다정한 친구예요.", "갈등이 생기면 부딪히기보다 조용히 물러나는 편이에요. 웃고 있어도 속으로는 서운할 수 있어요.", "날카로운 말이나 큰 소리를 들을 때 쉽게 상처받아요.", "부드러운 말투로 천천히 다가가면 마음을 열어요.", "음… 난 아무거나 괜찮아.", "내 의견도 물어봐 줬으면…"], "INFP": ["🦄", "꿈꾸는 유니콘", "상상력이 풍부하고 마음이 따뜻한 친구예요.", "친구의 말 한마디를 하루 종일 떠올리며 여러 장면을 상상해요. 말로는 괜찮다고 해도 오래 마음에 남을 수 있어요.", "내 생각이나 마음이 무시당한다고 느낄 때 크게 상처받기 쉬워요.", "네 마음이 궁금하다고 진심으로 물어봐 주면 좋아요.", "괜찮아… (아마도?)", "아까 그 말, 계속 생각나…"], "INTP": ["🐙", "궁금한 문어", "'왜?'가 궁금한 생각쟁이 친구예요.", "다툼이 생기면 왜 그런지 따져 보느라 감정 표현이 늦을 수 있어요. 질문이 많은 건 따지는 게 아니라 정말 궁금해서일 수 있어요.", "억지로 빨리 대답하라고 할 때 당황하기 쉬워요.", "왜 그렇게 느꼈는지 이유를 함께 이야기하면 잘 통해요.", "근데 왜?", "궁금해서 물어본 거지, 따지는 거 아니야."], "ESTP": ["🐆", "직진 치타", "활발하고 행동이 빠른 친구예요.", "속상한 일이 생기면 바로 말하거나 행동으로 풀려고 해요. 말이 툭 튀어나와도 오래 마음에 담아 두지 않는 편이에요.", "길게 돌려 말하거나 오래 붙잡고 이야기할 때 답답해하기 쉬워요.", "짧고 솔직하게 말해 주면 금방 알아들어요.", "일단 해 보자!", "벌써 다 잊었어. 우리 다시 놀자!"], "ESFP": ["🐬", "분위기 메이커 돌고래", "어디서든 분위기를 밝게 만드는 친구예요.", "다툼이 생겨도 장난이나 웃음으로 풀려고 할 수 있어요. 가볍게 넘기는 것처럼 보여도 사실은 어색한 분위기를 풀고 싶은 마음일 수 있어요.", "친구들 사이에서 혼자 빠졌다고 느낄 때 마음이 다치기 쉬워요.", "밝게 먼저 말을 걸어 주면 반갑게 받아 줘요.", "에이~ 웃자!", "분위기가 어색한 게 제일 싫어."], "ENFP": ["🐥", "리액션 부자 병아리", "아이디어가 넘치고 정이 많은 친구예요.", "감정이 바로 얼굴과 말에 드러나요. 크게 반응해도 금방 풀리고 먼저 화해하자고 할 수 있어요.", "내 열정이나 아이디어가 무시당할 때 크게 실망하기 쉬워요.", "마음을 솔직하게 말해 주면 진심으로 들어 줘요.", "대박! 진짜?!", "금방 풀릴 거야. 우리 다시 친해지자!"], "ENTP": ["🐒", "반박 장인 원숭이", "재치 있고 토론을 좋아하는 친구예요.", "의견이 다르면 장난처럼 반박할 수 있어요. 공격하려는 게 아니라 생각을 주고받는 게 재미있어서일 수 있어요.", "내 생각을 말할 기회가 없을 때 답답해하기 쉬워요.", "'나는 그 말이 조금 아팠어'라고 분명히 말해 주면 금방 알아채요.", "그건 아닌 것 같은데?", "싸우자는 게 아니라 이야기하는 게 재밌어서 그래."], "ESTJ": ["🦁", "대장 사자", "앞장서서 일을 척척 해내는 친구예요.", "일이 제대로 되지 않으면 단호하게 말할 수 있어요. 잔소리처럼 들려도 함께 잘하고 싶은 마음일 수 있어요.", "약속이나 규칙을 지키지 않을 때 화가 나기 쉬워요.", "무엇을 어떻게 하면 좋을지 구체적으로 말하면 잘 통해요.", "순서대로 하자!", "다 같이 잘 끝내고 싶어서 그래."], "ESFJ": ["🐶", "다 같이 강아지", "친구들을 잘 챙기고 함께하는 걸 좋아하는 친구예요.", "다툼이 생기면 빨리 화해하고 싶어 해요. 서운한 마음을 다른 친구에게 털어놓을 수도 있어요.", "고마운 마음을 몰라주거나 나만 빠졌다고 느낄 때 서운하기 쉬워요.", "고마웠던 점을 먼저 말해 주면 마음이 금방 풀려요.", "다 같이 하자!", "나도 함께하고 싶었어."], "ENFJ": ["🐘", "모두의 상담사 코끼리", "모두가 잘 지내도록 챙기는 친구예요.", "다툼이 생기면 모두의 마음을 살피느라 자기 마음은 뒤로 미룰 수 있어요. 앞장서서 정리하려는 건 함께 잘 지내고 싶어서일 수 있어요.", "내 노력을 아무도 알아주지 않을 때 마음이 지치기 쉬워요.", "'네 덕분에 좋았어'라고 먼저 말해 주면 힘이 나요.", "다들 괜찮아?", "나도 사실 조금 힘들어."], "ENTJ": ["🐯", "리더 호랑이", "목표를 향해 친구들을 이끄는 친구예요.", "일을 빨리 해내고 싶어서 지시하듯 말할 수 있어요. 무시하려는 게 아니라 결과를 잘 내고 싶은 마음일 수 있어요.", "일이 계획 없이 흘러갈 때 답답해하기 쉬워요.", "내 생각을 분명하고 당당하게 말하면 잘 들어 줘요.", "이렇게 하면 돼!", "네 생각도 듣고 싶긴 해."]};
+const fullType=m=>/^[EI][SN][TF][JP]$/.test(m||"")?m:"";
+function kiki(size,mood){size=size||64;const K="#2b2320";
+const eyeR=mood==="wink"?`<path d="M36.5 42q3.5-3 7 0" stroke="${K}" stroke-width="3" fill="none" stroke-linecap="round"/>`:`<circle cx="40" cy="42" r="3.2" fill="${K}"/>`;
+return `<svg width="${size}" height="${size*1.25}" viewBox="0 0 64 80" aria-hidden="true"><rect x="24" y="6" width="16" height="8" rx="3" fill="#fffaf0" stroke="${K}" stroke-width="3"/><rect x="10" y="12" width="44" height="62" rx="15" fill="#fffaf0" stroke="${K}" stroke-width="3"/><path d="M13 50h38v10q0 11-11 11H24q-11 0-11-11z" fill="#8fdc9b"/><rect x="10" y="12" width="44" height="62" rx="15" fill="none" stroke="${K}" stroke-width="3"/><circle cx="24" cy="42" r="3.2" fill="${K}"/>${eyeR}<path d="M26.5 49.5q5.5 5 11 0" stroke="${K}" stroke-width="3" fill="none" stroke-linecap="round"/><ellipse cx="17" cy="48" rx="3.6" ry="2.2" fill="#ff9fb4"/><ellipse cx="47" cy="48" rx="3.6" ry="2.2" fill="#ff9fb4"/><path d="M33 19l-6 10h5l-2 7 7-10h-5z" fill="#ffe17a" stroke="${K}" stroke-width="2" stroke-linejoin="round"/><path d="M56 4l1.4 3 3 1.4-3 1.4-1.4 3-1.4-3-3-1.4 3-1.4z" fill="#fff" stroke="${K}" stroke-width="1.6" stroke-linejoin="round"/></svg>`}
+function drawKiki(){document.querySelectorAll(".kk").forEach(el=>{el.innerHTML=kiki(+el.dataset.size||64,el.dataset.mood)})}
+/* 친구 입장에서 보기 (친구 성향 짐작) */
+const FRIEND={
+  E:"생각을 바로 말로 꺼내는 편이라면, 깊이 생각하지 않고 한 말이 나에게 크게 들렸을 수도 있어요.",
+  I:"속마음을 바로 말하지 않는 편이라면, 조용했던 게 화가 나서가 아니라 생각을 정리하는 중이었을 수도 있어요.",
+  S:"지금 보이는 사실을 중요하게 여기는 편이라면, 마음보다 현실적인 이야기를 먼저 했을 수도 있어요.",
+  N:"새로운 생각을 좋아하는 편이라면, 내 말보다 자기 아이디어에 빠져 있었을 수도 있어요.",
+  T:"해결 방법부터 생각하는 편이라면, 내 마음을 무시하려던 게 아니라 도와주려고 한 말이었을 수도 있어요.",
+  F:"분위기와 마음을 신경 쓰는 편이라면, 친구도 속으로 마음이 쓰이고 있었을 수 있어요.",
+  J:"계획대로 되는 게 편한 편이라면, 갑자기 바뀌는 상황에서 예민해졌을 수도 있어요.",
+  P:"그때그때 정하는 게 편한 편이라면, 약속이나 순서를 가볍게 여긴 게 아니라 그냥 흐름대로 움직였을 수도 있어요."
+};
+/* 내 마음 들여다보기 (내 성향) */
+const MYVIEW={
+  E:"나는 생각을 나누고 싶은 편이라, 대답이 없거나 말이 엇갈리면 더 답답했을 수 있어요. 함께하고 싶은 마음이 크다는 뜻이에요.",
+  I:"나는 혼자 생각을 정리하는 편이라, 마음속에 담아 두다 보니 더 크게 느껴졌을 수 있어요. 그만큼 깊이 생각하는 힘이 있어요.",
+  S:"나는 있었던 일을 정확히 기억하는 편이라, 그 장면이 자꾸 떠올랐을 수 있어요.",
+  N:"나는 여러 가능성을 떠올리는 편이라, '혹시 나를 싫어하나?' 하는 생각까지 이어졌을 수 있어요. 상상력이 풍부하다는 뜻이기도 해요.",
+  T:"나는 옳고 그름을 따지는 편이라, 공평하지 않다고 느껴서 더 속상했을 수 있어요.",
+  F:"나는 마음을 깊이 느끼는 편이라, 작은 말에도 더 크게 상처받았을 수 있어요. 그건 약한 게 아니라 섬세한 거예요.",
+  J:"나는 미리 정한 대로 되는 게 편한 편이라, 예상과 달라지면 더 불편했을 수 있어요.",
+  P:"나는 자유롭게 하는 게 편한 편이라, 정해진 대로 하라는 말이 답답했을 수 있어요."
+};
+/* 위험 신호 단어 (학생이 쓴 글에서 먼저 확인) */
+/* 선생님과 이야기가 필요한 낱말 (학교에서 선생님이 판단해요) */
+const TEACHER=/왕따|따돌|괴롭|놀려|놀림|놀린|욕을?\s*해|때렸|때려|맞았|맞아서|폭력|협박|돈.{0,3}뺏|단톡|뒷담|소문/;
+/* 바로 도움이 필요한 낱말 */
+const URGENT=/죽고|죽을래|죽어\s*버|자살|자해|살기\s*싫|사라지고\s*싶|가출|칼로|목을/;
+const DANGER={test:t=>TEACHER.test(t)||URGENT.test(t)};
+
+/* ---------- 상태 ---------- */
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+let pick={},fpick={},mbti="",fmbti="",lastCat="",badgeGiven=false,firstText="";
+let keys=0;try{keys=+localStorage.getItem("maumKeys")||0}catch(e){}
+const STORY=[[1, "🏮", "첫 번째 등불", "오해 안개 속에 작은 등불이 켜졌어요. 키키가 말해요. \"마음을 들여다본 첫 충전이야. 이제 길이 조금 보여!\""], [3, "🌉", "이해의 다리", "끊어져 있던 다리가 이어졌어요. 다리 건너편에서 다른 생각을 가진 친구들이 손을 흔들어요."], [5, "🌈", "무지개 정원", "시들었던 정원에 꽃이 피었어요. 꽃마다 색이 다른 것처럼, 친구들 마음도 저마다 다른 색이에요."], [8, "🏡", "마음 쉼터", "속상한 친구들이 쉬어 갈 수 있는 쉼터의 문이 열렸어요. 이제 나도 누군가의 쉼터가 될 수 있어요."], [12, "🏰", "공감의 성", "마을 꼭대기 성의 문이 열렸어요. 성 안에는 '내 마음도, 친구 마음도 소중해'라는 글이 새겨져 있어요."], [16, "🎉", "마음 마을 축제", "오해 안개가 모두 걷혔어요! 마을 친구들이 모여 축제를 열어요. 키키가 너에게 '마음 탐험가' 배지를 달아 줘요."]];
+function showKeys(){$("keys").textContent=`🔋 ${keys}번`;if($("introStory"))$("introStory").innerHTML=introStory()}
+function nextChap(){return STORY.find(c=>keys<c[0])}
+function curChap(){return STORY.filter(c=>keys>=c[0]).pop()}
+function gauge(){const n=nextChap();if(!n)return `<div class="gauge"><i style="width:100%"></i></div>`;
+  const prev=(curChap()||[0])[0];return `<div class="gauge"><i style="width:${Math.round((keys-prev)/(n[0]-prev)*100)}%"></i></div>`}
+function introStory(){const n=nextChap(),c=curChap();
+  if(!c) return `<b>🌫️ 마음 마을 이야기</b><br>키키가 사는 마음 마을에 <b style="font-size:inherit;font-family:inherit">오해 안개</b>가 끼었어요. 친구 마음을 이해할 때마다 <b style="font-size:inherit;font-family:inherit">🔋 마음 충전</b>! 하나씩 채워서 마을을 환하게 밝혀 줘! <span class="muted">(눌러서 이야기 보기)</span>`;
+  return `<b>${c[1]} 지금 마을: ${c[2]}</b><br>${n?`다음 이야기 <b style="font-size:inherit;font-family:inherit">${n[1]} ${n[2]}</b>까지 충전 ${n[0]-keys}번 남았어요.`:"마을이 모두 되살아났어요! 그래도 충전은 계속할 수 있어요."}${gauge()}`}
+function storyHTML(){return STORY.map(c=>{const on=keys>=c[0];
+  return `<div class="chap ${on?"":"lock"}"><span class="em">${c[1]}</span><div><b>${on?c[2]:"???"}</b> <span class="muted">충전 ${c[0]}번</span><br>${on?c[3]:"곧 만날 이야기예요."}</div></div>`}).join("")}
+const STOPS={
+talk:['#ffd6de','<path d="M8 20c0-7 5.5-11 12-11s12 4 12 11-5.5 10.5-12 10.5c-1.6 0-3.1-.2-4.5-.6L9.5 32.5l1.8-5.3C9.2 25.3 8 22.8 8 20z" fill="#ffd6de" stroke="#3a2e2a" stroke-width="2.4" stroke-linejoin="round"/><circle cx="15" cy="20" r="1.8" fill="#3a2e2a"/><circle cx="20" cy="20" r="1.8" fill="#3a2e2a"/><circle cx="25" cy="20" r="1.8" fill="#3a2e2a"/>','무슨 일?'],
+me:['#fff3d6','<path d="M7 27c0-9 5.8-17 13-17s13 8 13 17c0 3.5-5.8 5.5-13 5.5S7 30.5 7 27z" fill="#fffdf7" stroke="#3a2e2a" stroke-width="2.4"/><path d="M12.5 12.5l-1.5-4.5 4.5 2.5M27.5 12.5l1.5-4.5-4.5 2.5" fill="#fffdf7" stroke="#3a2e2a" stroke-width="2.2" stroke-linejoin="round"/><circle cx="15.5" cy="21" r="1.7" fill="#3a2e2a"/><circle cx="24.5" cy="21" r="1.7" fill="#3a2e2a"/><path d="M18.5 24.5q1.5 1.3 3 0" stroke="#3a2e2a" stroke-width="1.8" fill="none" stroke-linecap="round"/><ellipse cx="12.5" cy="24.5" rx="2.2" ry="1.3" fill="#ffb3c1"/><ellipse cx="27.5" cy="24.5" rx="2.2" ry="1.3" fill="#ffb3c1"/>','나'],
+friend:['#dcefff','<circle cx="12" cy="11.5" r="3.6" fill="#dcefff" stroke="#3a2e2a" stroke-width="2.2"/><circle cx="28" cy="11.5" r="3.6" fill="#dcefff" stroke="#3a2e2a" stroke-width="2.2"/><path d="M7 26c0-8.5 5.8-15 13-15s13 6.5 13 15c0 4-5.8 6.5-13 6.5S7 30 7 26z" fill="#dcefff" stroke="#3a2e2a" stroke-width="2.4"/><circle cx="15.5" cy="21.5" r="1.7" fill="#3a2e2a"/><circle cx="24.5" cy="21.5" r="1.7" fill="#3a2e2a"/><path d="M18.3 24.3q1.7 1.4 3.4 0" stroke="#3a2e2a" stroke-width="1.8" fill="none" stroke-linecap="round"/><ellipse cx="12.5" cy="25" rx="2.2" ry="1.3" fill="#ffb3c1"/><ellipse cx="27.5" cy="25" rx="2.2" ry="1.3" fill="#ffb3c1"/>','친구'],
+heart:['#ffc7d4','<path d="M20 32S7 24.5 7 16c0-4.2 3.2-7 6.8-7 2.8 0 4.9 1.6 6.2 3.6C21.3 10.6 23.4 9 26.2 9 29.8 9 33 11.8 33 16c0 8.5-13 16-13 16z" fill="#ffc7d4" stroke="#3a2e2a" stroke-width="2.4" stroke-linejoin="round"/><circle cx="16" cy="18" r="1.6" fill="#3a2e2a"/><circle cx="24" cy="18" r="1.6" fill="#3a2e2a"/><path d="M18.6 21.2q1.4 1.2 2.8 0" stroke="#3a2e2a" stroke-width="1.7" fill="none" stroke-linecap="round"/>','마음'],
+key:['#8fdc9b','<rect x="16" y="4.5" width="8" height="4" rx="1.5" fill="#fffdf7" stroke="#3a2e2a" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><rect x="10" y="8" width="20" height="27" rx="5" fill="#fffdf7" stroke="#3a2e2a" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M12.4 22h15.2v8.8q0 2.6-2.6 2.6h-10q-2.6 0-2.6-2.6z" fill="#8fdc9b"/><rect x="10" y="8" width="20" height="27" rx="5" fill="none" stroke="#3a2e2a" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M21.5 12l-5 8h4l-2 6.5 5.5-8.5h-4z" fill="#ffe17a" stroke="#3a2e2a" stroke-width="1.8" stroke-linejoin="round"/>','충전']};
+function stopSVG(k){return `<svg viewBox="0 0 40 40">${STOPS[k][1]}</svg>`}
+const STEPS=[["s-intro","talk"],["s-card","me"],["s-friend","friend"],["s-result","heart"],["done","key"]];
+let prevSec="s-intro";
+function drawMap(id){const idx=id==="s-loading"||id==="s-cat"||id==="s-ask"?3:id==="s-write"?0:STEPS.findIndex(x=>x[0]===id);
+  if(idx<0){$("map").style.display="none";return}$("map").style.display="flex";
+  $("map").innerHTML=STEPS.map((st,i)=>`<span class="st ${i<idx?"done":i===idx?"now":"todo"}">${i===idx?`<span class="walker kk" data-size="20"></span>`:""}${stopSVG(st[1])}<small>${STOPS[st[1]][2]}</small></span>`).join('<span class="path"></span>');drawKiki()}
+function show(id){if(id!=="s-dex"&&id!=="s-story")prevSec=id;if(id==="s-card"||id==="s-friend")document.querySelectorAll(".recap").forEach(x=>x.innerHTML=sitText()?"📝 "+esc(sitText()):"");document.querySelectorAll("section").forEach(s=>s.classList.add("hide"));$(id).classList.remove("hide");window.scrollTo(0,0);drawMap(id)}
+let dex=[];try{dex=JSON.parse(localStorage.getItem("maumDex")||"[]")}catch(e){}
+function showDexCount(){$("dexBtn").textContent=`📖 ${dex.length}/16`}
+function unlock(t){if(!t||dex.includes(t))return false;dex.push(t);try{localStorage.setItem("maumDex",JSON.stringify(dex))}catch(e){}showDexCount();return true}
+function confetti(){const em=["🔋","✨","💛","🎉","⭐"];for(let i=0;i<24;i++){const d=document.createElement("div");d.className="confetti";d.textContent=em[i%em.length];
+  d.style.left=Math.random()*100+"vw";d.style.animationDelay=Math.random()*.6+"s";document.body.appendChild(d);setTimeout(()=>d.remove(),2600)}}
+/* 외부(AI)로 보내기 전 개인정보 가리기 */
+function maskPII(t){return String(t||"")
+  .replace(/\S+@\S+\.\S+/g,"[메일]")
+  .replace(/\d[\d\- ]{6,}\d/g,"[번호]")
+  .replace(/\d+\s*학년\s*\d+\s*반(\s*\d+\s*번)?/g,"[반]")
+  .replace(/\d+\s*반\s*\d+\s*번/g,"[반]")
+  .replace(/[가-힣]{2,8}(초등학교|중학교|초교)|[가-힣]{2,6}초(?=[\s에의,.!?]|$)/g,"[학교]")}
+function log(category,danger,badge){
+  if(!CONFIG.apiUrl) return;
+  fetch(CONFIG.apiUrl,{method:"POST",body:JSON.stringify({action:"log",mode:CONFIG.mode,mbti,fmbti,category,danger,badge})}).catch(()=>{});
+}
+/* 주소 끝에 #demo 를 붙이면 교사 시연용, 없으면 학생용 */
+if(location.hash==="#demo") CONFIG.mode="demo";
+else if(location.hash==="#student") CONFIG.mode="student";
+showKeys();
+if(aiReady()&&(CONFIG.mode==="demo"||CONFIG.studentAI)) $("aiNotice").style.display="block";
+if(CONFIG.mode==="demo"){
+  $("demo").style.display="block";
+  if(!aiReady()) $("demo").textContent="🎤 시연용 모드 · AI 연결 주소가 없어서 학생용 방식으로 판단해요";
+}
+
+/* 2. 탐험 카드 */
+const AXF=[["그 친구는 쉬는 시간에?",{E:"친구들과 이야기하며 노는 편",I:"조용히 혼자 쉬는 편"}],["그 친구는 새로운 걸 배울 때?",{S:"직접 해 보는 걸 좋아하는 편",N:"상상하는 걸 좋아하는 편"}],["내가 고민을 말하면 그 친구는?",{T:"해결 방법부터 말하는 편",F:"마음부터 물어보는 편"}],["모둠 활동을 할 때 그 친구는?",{J:"계획을 먼저 세우는 편",P:"하면서 정하는 편"}]];
+function axesHTML(g,qs){return qs.map((q,i)=>{const a=AXES[i];return `<p style="margin-top:14px;font-weight:800">${i+1}. ${q[0]}</p><div class="axis">${[a[0],a[1]].map(l=>`<button class="pick" data-g="${g}" data-i="${i}" data-l="${l}"><small style="color:var(--ink);font-size:15px;font-weight:700">${q[1][l]}</small><small>(${l})</small></button>`).join("")}<button class="pick" data-g="${g}" data-i="${i}" data-l="X" style="grid-column:1/-1;padding:6px"><small>🤔 잘 모르겠어요 / 둘 다 비슷해요</small></button></div>`}).join("")+`<div class="tip" id="card_${g}" style="display:none"></div>`}
+$("axes").innerHTML=axesHTML("me",AXES.map(a=>[a[2],a[3]]));
+$("axesF").innerHTML=axesHTML("fr",AXF);
+function setPick(g,i,l){const P=g==="me"?pick:fpick;P[i]=l;document.querySelectorAll(`.pick[data-g="${g}"][data-i="${i}"]`).forEach(x=>x.classList.toggle("on",x.dataset.l===l));
+  $(g==="me"?"cardDone":"fDone").disabled=Object.keys(P).length<4;showCard(g)}
+function showCard(g){const P=g==="me"?pick:fpick;const t=[0,1,2,3].map(i=>P[i]?(P[i]==="X"?"?":P[i]):"_").join(" ");
+  const el=$("card_"+g);el.style.display="block";
+  const full=Object.keys(P).length===4&&fullType([0,1,2,3].map(i=>P[i]).join(""));
+  if(full){const c=TYPES[full];el.style.background="transparent";el.style.border="0";el.style.padding="0";
+    el.innerHTML=`<div class="charcard"><div class="em">${c[0]}</div><div><span class="muted">${g==="me"?"나는":"그 친구는 아마"} ${full}</span><b>${c[1]}</b><span style="font-size:14px">${c[2]}</span><div style="margin-top:6px;display:inline-block;background:var(--yellow);border:2px solid var(--ink);border-radius:12px;padding:2px 10px;font-weight:800;font-size:14px">💬 "${c[6]}"</div></div></div>`;return}
+  el.removeAttribute("style");el.style.display="block";
+  el.innerHTML=(g==="me"?"🧭 나의 탐험 카드: ":"👀 친구 카드(짐작): ")+`<b style="font-size:20px;letter-spacing:2px">${t}</b><br><span class="muted">?는 '잘 모르겠어요'예요. 그래도 괜찮아요.</span>`}
+function typeInput(id,g){$(id).addEventListener("input",()=>{const v=$(id).value.toUpperCase().replace(/[^A-Z]/g,"");$(id).value=v;
+  if(/^[EI][SN][TF][JP]$/.test(v)) v.split("").forEach((l,i)=>setPick(g,i,l))})}
+typeInput("meType","me");typeInput("frType","fr");
+document.addEventListener("click",e=>{
+  const p=e.target.closest(".pick");
+  if(p){setPick(p.dataset.g,p.dataset.i,p.dataset.l);return}
+  const g=e.target.closest("[data-go]");if(g){show(g.dataset.go);return}
+  const c=e.target.closest(".cat[data-c]");if(c){studentResult(+c.dataset.c);return}
+});
+$("cardDone").onclick=()=>{mbti=[0,1,2,3].map(i=>pick[i]).join("");try{localStorage.setItem("maumMe",mbti)}catch(e){}show("s-friend")};
+function prepMe(){let m="";try{m=localStorage.getItem("maumMe")||""}catch(e){}
+  const t=fullType(m);
+  if(m.length===4){$("meQuick").style.display="block";$("meFull").style.display="none";
+    $("meQuick").innerHTML=`<p style="font-weight:800;font-size:17px">지난번에 고른 나는 ${t?`${TYPES[t][0]} <b>${TYPES[t][1]}</b> (${t})`:`<b>${m.replace(/X/g,"?")}</b>`}였어.<br>오늘도 맞아?</p>
+    <button class="btn" id="meSame" style="margin-top:10px">맞아! 그대로 갈래 →</button><button class="btn ghost" id="meRedo">다시 고를래</button>`;
+    $("meSame").onclick=()=>{m.split("").forEach((l,i)=>setPick("me",i,l));$("cardDone").click()};
+    $("meRedo").onclick=()=>{$("meQuick").style.display="none";$("meFull").style.display=""}}
+  else{$("meQuick").style.display="none";$("meFull").style.display=""}}
+$("fDone").onclick=()=>{fmbti=[0,1,2,3].map(i=>fpick[i]).join("");analyze()};
+$("fSkip").onclick=()=>{fmbti="XXXX";analyze()};
+
+/* 3. 상황 고르기 */
+let sit={cat:-1,ev:"",place:""};
+const SITCATS=CATS.map((c,i)=>[i,c[0],c[1]==="잘 모르겠음"?"기타":c[1]]);
+function sitCatsHTML(){return SITCATS.map(c=>`<button class="cat" data-sc="${c[0]}">${c[1]} ${c[2]}</button>`).join("")+`<button class="cat" data-sc="help" style="grid-column:1/-1;background:#ffe6e2">🆘 친구가 계속 괴롭히거나 따돌려요</button>`}
+function evText(e){return "친구가 "+e.replace(/을$/,"어요")}
+function sitText(){if(sit.cat<0||!sit.ev) return "";const t=$("txt").value.trim();
+  return (sit.place?sit.place+" ":"")+evText(sit.ev)+(t?" "+t:"")}
+function sitUpdate(){const ok=sit.cat>=0&&!!sit.ev;$("writeDone").disabled=!ok;
+  $("sitPreview").style.display=ok?"block":"none";if(ok)$("sitPreview").innerHTML="📝 <b>"+esc(sitText())+"</b>"}
+function resetSit(){sit={cat:-1,ev:"",place:""};$("txt").value="";$("sitCats").innerHTML=sitCatsHTML();$("writeDone").disabled=true}
+document.addEventListener("click",e=>{
+  const c=e.target.closest("[data-sc]");
+  if(c){if(c.dataset.sc==="help"){goHelp("따돌려요");return}
+    sit.cat=+c.dataset.sc;sit.ev="";document.querySelectorAll("[data-sc]").forEach(x=>x.classList.toggle("on",x===c));
+    const key=CATS[sit.cat][1]==="잘 모르겠음"?"기타":CATS[sit.cat][1];
+    $("sitEv").innerHTML=(EVENTS[key]||EVENTS["기타"]).map(t=>`<button class="chip" data-se="${t}">${evText(t)}</button>`).join("");
+    $("sitPlace").innerHTML=PLACES.map(t=>`<button class="chip" data-sp="${t}">${t}</button>`).join("");
+    const R={"의견 차이":"생각이 달라서 답답했구나.","다툼":"다퉜구나… 마음이 많이 무거웠겠다.","서운함":"서운한 일이 있었구나. 말해 줘서 고마워.","오해":"오해가 생겼구나. 억울했겠다.","발표·말하기":"발표할 때 그런 일이 있었구나. 많이 떨렸지?","새 친구 사귀기":"친구랑 가까워지고 싶었구나.","화해":"다시 잘 지내고 싶은 마음이구나.","기타":"그랬구나. 천천히 말해 줘."};
+    $("sitStep").textContent=CATS[sit.cat][0]+" "+key;
+    $("sitBubble").innerHTML=(R[key]||R["기타"])+"<br>친구가 어떻게 했는지 골라 줄래?";
+    sitUpdate();show("s-write");return}
+  const v=e.target.closest("[data-se]");if(v){sit.ev=v.dataset.se;document.querySelectorAll("[data-se]").forEach(x=>x.classList.toggle("on",x===v));sitUpdate();return}
+  const pl=e.target.closest("[data-sp]");if(pl){sit.place=sit.place===pl.dataset.sp?"":pl.dataset.sp;document.querySelectorAll("[data-sp]").forEach(x=>x.classList.toggle("on",x.dataset.sp===sit.place));sitUpdate();return}
+});
+$("txt").addEventListener("input",sitUpdate);
+resetSit();
+$("sitBack").onclick=()=>{resetSit();show("s-intro")};
+$("introStory").onclick=()=>$("keys").click();
+$("writeDone").onclick=()=>{
+  const t=sitText();firstText=t;badgeGiven=false;
+  const own=$("txt").value.trim();if(own&&DANGER.test(own)){goHelp(own);return}
+  prepMe();show("s-card");
+};
+function analyze(){const t=firstText;
+  if(aiReady()&&(CONFIG.mode==="demo"||CONFIG.studentAI)){askAI(t,"");return}
+  studentResult(sit.cat)}
+function goHelp(t,urgent){
+  urgent=urgent||URGENT.test(t||"");
+  $("urgentBox").classList.toggle("hide",!urgent);
+  log(urgent?"긴급 도움":"선생님 상담","Y","N");
+  resetSit();show("s-help");
+}
+
+/* ---------- AI 직접 연결 (HTML 하나로 쓸 때) ---------- */
+const SOLAR_URL="https://api.upstage.ai/v1/solar/chat/completions";
+const SYSTEM=[
+  "너는 초등학교 5·6학년의 친구 관계 고민을 들어 주는 따뜻한 상담 선생님 같은 안내자야.",
+  "목표는 해결책을 정해 주는 것이 아니라, 학생이 '친구는 이런 이유로 그랬을 수도 있겠다'를 알아차리고 스스로 마음을 정리하도록 돕는 거야.",
+  "[1순위 안전 규칙]",
+  "1. 이름·학교·연락처는 묻지 않는다. 글에 이름이 있으면 nameNotice를 true로 한다.",
+  "2. 성향으로 사람을 판단하지 않는다. '안 맞는 유형', '나쁜 유형'이라고 말하지 않고, 친구의 성향은 늘 '~했을 수도 있어요'처럼 짐작으로만 말한다.",
+  "3. 누가 잘못했는지 판정하지 않는다.",
+  "4. 따돌림, 괴롭힘, 놀림, 폭력처럼 선생님이 함께 판단해야 할 일이 보이면 danger를 true로 하고 다른 칸은 비운다. 전화번호를 안내하지 않는다.",
+  "5. 자해, 가출, 죽고 싶다는 말이 보이면 danger와 urgent를 모두 true로 하고 다른 칸은 비운다.",
+  "6. 비속어, 유행어, 폭력적·선정적 표현은 쓰지 않는다.",
+  "[상황 판단]",
+  "- category는 다음 중 하나: 의견 차이, 다툼, 서운함, 오해, 발표·말하기, 새 친구 사귀기, 화해, 기타",
+  "- 글이 너무 짧거나 누가 무엇을 했는지 알기 어렵고 추가 답변(followup)도 없으면 needQuestion을 true로 하고 question에 질문 1개만 쓴다.",
+  "- 친구 관계가 아닌 고민이면 category는 기타로 하고, 마음을 안아 준 뒤 담임선생님이나 상담 선생님과 이야기해 보도록 권한다.",
+  "[답변 쓰는 법]",
+  "- 학생 글에 나온 구체적인 일(누가, 언제, 무슨 말이나 행동)을 짚어서, 이 학생에게만 하는 말처럼 쓴다. 어느 상황에나 맞는 판에 박힌 말은 쓰지 않는다.",
+  "- 학생 글에 없는 사실은 지어내지 않는다. 성향 알파벳(MBTI)은 꼭 쓰지 않아도 되고, 쓴다면 쉬운 설명과 함께 쓴다.",
+  "- comfort: 학생이 겪은 일을 되짚으며 마음을 충분히 안아 준다. 그렇게 느낀 게 자연스럽다고 말해 준다. 2~3문장.",
+  "- friendView: 상대 친구의 성향(짐작)을 바탕으로, 친구가 그렇게 말하거나 행동한 이유를 1~2가지 가능성으로 보여 준다. 친구 성향을 모르면 상황에서 생각해 볼 수 있는 다른 이유를 쓴다. 2~3문장.",
+  "- myView: 학생의 성향 때문에 이 일이 더 크게 느껴졌을 수 있는 이유를 다정하게 설명하고, 그 성향을 장점으로 봐 준다. 1~2문장.",
+  "- reflectQ: 학생이 스스로 마음을 정리할 수 있게 돕는 질문 1~2개.",
+  "- keySentence: 마음이 정리되면 친구에게 건넬 수 있는 나-전달법 문장 1개. 「(있었던 일)했을 때, 나는 (마음)이 들었어. (바람)하면 좋겠어.」 형식으로, 친구를 탓하는 말 없이 쓴다. 따옴표는 쓰지 않는다.",
+  "- 모두 5·6학년이 이해할 쉬운 존중체(~해요)로 쓴다.",
+  "[예시]",
+  "나의 성향: I(혼자 쉬며 힘이 남), F(마음부터 살핌) / 친구 성향(짐작): E(친구들과 이야기하며 힘이 남), T(해결 방법부터 생각함) / 상황: 모둠에서 내 의견을 말했는데 친구가 별로라고 해서 속상했어요",
+  "{\"danger\":false,\"urgent\":false,\"nameNotice\":false,\"needQuestion\":false,\"question\":\"\",\"category\":\"의견 차이\",\"comfort\":\"용기를 내서 내 생각을 꺼냈는데 별로라는 말이 돌아오면 마음이 쿵 내려앉죠. 그 말이 계속 마음에 남는 건 정말 자연스러운 일이에요.\",\"friendView\":\"친구가 해결 방법부터 생각하는 편이라면, 내 의견이 싫다기보다 더 좋은 방법을 빨리 찾고 싶어서 짧게 말했을 수도 있어요. 생각을 바로 말로 꺼내는 편이라 그 말이 얼마나 아프게 들릴지 미처 몰랐을 수도 있고요.\",\"myView\":\"나는 마음을 깊이 느끼고 혼자 곱씹는 편이라 그 한마디가 더 크게 다가왔을 거예요. 그만큼 다른 사람의 말도 소중하게 듣는다는 뜻이에요.\",\"reflectQ\":\"친구가 별로라고 한 건 내 생각 전체였을까요, 아니면 한 부분이었을까요? 내가 친구에게 정말 바랐던 건 무엇이었나요?\",\"keySentence\":\"아까 별로라는 말에 조금 속상했어. 어떤 부분이 아쉬웠는지 알려 주면 같이 고쳐 보고 싶어.\"}"
+].join("\n");
+function getKey(){try{return localStorage.getItem("solarKey")||""}catch(e){return ""}}
+function getModel(){try{return localStorage.getItem("solarModel")||"solar-pro4"}catch(e){return "solar-pro4"}}
+function aiReady(){return !!CONFIG.apiUrl||!!getKey()}
+async function solarDirect(text,followup){text=maskPII(text);followup=maskPII(followup);
+  const d={E:"E(친구들과 이야기하며 힘이 남)",I:"I(혼자 쉬며 힘이 남)",S:"S(직접 해 보는 것을 좋아함)",N:"N(상상하는 것을 좋아함)",T:"T(해결 방법부터 생각함)",F:"F(마음부터 살핌)",J:"J(계획을 먼저 세움)",P:"P(하면서 정함)"},nm=["E/I","S/N","T/F","J/P"];
+  const tr=m=>m?m.split("").map((c,i)=>d[c]||(nm[i]+" 잘 모르겠음(?)")).join(", "):"선택 안 함";
+  const user="나의 성향: "+tr(mbti)+"\n친구 성향(짐작): "+tr(fmbti)+(typeCtx()?"\n성향 카드 참고: "+typeCtx():"")+"\n학생이 쓴 상황: "+text+(followup?"\n질문에 대한 학생 답: "+followup:"")+
+    '\n\n아래 JSON 형식으로만 답해. 다른 말은 쓰지 마.\n{"danger":false,"urgent":false,"nameNotice":false,"needQuestion":false,"question":"","category":"","comfort":"","friendView":"","myView":"","reflectQ":"","keySentence":""}';
+  const r=await fetch(SOLAR_URL,{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+getKey()},
+    body:JSON.stringify({model:getModel(),temperature:0.7,max_tokens:1000,messages:[{role:"system",content:SYSTEM},{role:"user",content:user}]})});
+  if(!r.ok) throw new Error("응답 코드 "+r.status+": "+(await r.text()).slice(0,150));
+  const t=(await r.json()).choices[0].message.content;
+  const o=JSON.parse(t.slice(t.indexOf("{"),t.lastIndexOf("}")+1));o.ok=true;return o;
+}
+/* 설정 화면 */
+$("keySave").onclick=async()=>{
+  const k=$("keyIn").value.trim(),m=$("modelIn").value.trim()||"solar-pro4";
+  try{if(k)localStorage.setItem("solarKey",k);localStorage.setItem("solarModel",m)}catch(e){}
+  if(!getKey()){$("keyMsg").innerHTML=`<div class="tip">키를 붙여 넣어 주세요.</div>`;return}
+  $("keyMsg").innerHTML=`<div class="tip">🔍 연결을 시험하고 있어요<span class="dots"></span></div>`;
+  try{mbti=mbti||"IF";const r=await solarDirect("모둠에서 내 의견을 말했는데 친구가 별로라고 해서 속상했어요","");
+    $("keyMsg").innerHTML=`<div class="tip">✅ <b>AI 연결 성공!</b><br>🤝 ${esc(r.empathy||"")}<br>💡 ${esc(r.action||"")}<br>🔑 ${esc(r.keySentence||"")}</div>`;
+    $("aiNotice").style.display="block";
+  }catch(e){
+    const cors=/Failed to fetch|NetworkError|Load failed/i.test(String(e));
+    $("keyMsg").innerHTML=`<div class="warn">❌ 연결 실패<br>${esc(String(e.message||e))}<br>${cors?"브라우저에서 바로 연결하는 게 막혀 있을 수 있어요. 이럴 땐 구글 앱스 스크립트(Code.gs) 방식으로 연결해요.":"키나 모델 이름을 다시 확인해 주세요."}</div>`;
+  }
+};
+$("keyDel").onclick=()=>{try{localStorage.removeItem("solarKey")}catch(e){}$("keyIn").value="";$("keyMsg").innerHTML=`<div class="tip">키를 지웠어요.</div>`};
+function openSetup(){$("modelIn").value=getModel();$("keyIn").value="";$("keyMsg").innerHTML=getKey()?`<div class="tip">저장된 키가 있어요 (끝자리 …${esc(getKey().slice(-4))})</div>`:"";show("s-setup")}
+
+function typeCtx(){const mt=fullType(mbti),ft=fullType(fmbti);let c="";
+  if(mt) c+=`나(${mt}, ${TYPES[mt][1]}): ${TYPES[mt][2]} 마음이 다치기 쉬운 때: ${TYPES[mt][4]} `;
+  if(ft) c+=`친구(${ft}, ${TYPES[ft][1]}): 갈등할 때: ${TYPES[ft][3]} 겉말 "${TYPES[ft][6]}" 속마음 "${TYPES[ft][7]}" 다가가는 법: ${TYPES[ft][5]}`;
+  return c.slice(0,600)}
+/* 4-1. 학생용 작전 (미리 만든 작전 카드) */
+/* 매번 다른 말: 지난번에 쓴 문장은 피해서 고르기 */
+let lastPick={};try{lastPick=JSON.parse(localStorage.getItem("maumLast")||"{}")}catch(e){}
+function vary(key,arr){if(!arr.length)return "";let i=Math.floor(Math.random()*arr.length);
+  if(arr.length>1&&i===lastPick[key]) i=(i+1+Math.floor(Math.random()*(arr.length-1)))%arr.length;
+  lastPick[key]=i;try{localStorage.setItem("maumLast",JSON.stringify(lastPick))}catch(e){}return arr[i]}
+const V={
+ open:["그랬구나.","말해 줘서 고마워.","그 일이 계속 마음에 남아 있었구나.","키키가 잘 들었어.","많이 신경 쓰였겠다.","여기까지 와 준 것만으로도 멋져요."],
+ close:["그렇게 느낀 건 아주 자연스러운 일이에요.","그런 마음이 드는 건 이상한 게 아니에요.","지금 그 마음, 그대로 괜찮아요.","누구라도 그런 마음이 들 수 있어요.","마음이 쓰였다는 건 그만큼 친구가 소중하다는 뜻이에요.","속상한 마음을 알아차린 것부터가 첫 충전이에요."],
+ more:["","어쩌면 친구도 그날 마음이 바빴을지 몰라요.","친구도 나중에 '그때 왜 그랬지?' 하고 떠올리고 있을 수 있어요.","친구는 그 순간 내 마음까지 미처 보지 못했을 수도 있어요.","같은 장면도 친구 자리에서 보면 조금 다르게 보일 수 있어요.",""],
+ echo:["그래서 '%s' 같은 일이 마음에 더 오래 남았을 수 있어요.","'%s' 때 마음이 크게 흔들린 것도 그래서일 거예요.","그래서 이번 일이 마음속에서 쉽게 지워지지 않았을 거예요.","그런 나라서 '%s' 순간이 더 또렷하게 기억날 수 있어요."],
+ q:["지금 내 마음의 날씨는 어때요? ☀️ ⛅ 🌧️","친구는 이 일을 어떻게 기억하고 있을까요?","내일 친구를 만나면 어떤 표정으로 인사하고 싶나요?","이 일이 일주일 뒤에도 지금만큼 클까요?","내 마음을 가장 먼저 들어 줄 사람은 누구일까요?","친구에게 고마웠던 순간도 하나 떠올려 볼까요?"],
+ kiki:["천천히 읽어 봐. 너도, 친구도 다 이유가 있었을 거야.","같이 마음 지도를 펼쳐 보자!","네 마음이랑 친구 마음, 둘 다 들여다볼 거야.","정답은 없어. 마음에 와닿는 것만 골라 읽어도 돼.","키키가 마음 배터리를 살짝 들여다봤어 🔍"],
+ style:["따뜻한 비유를 하나 넣어서","학생의 말을 먼저 되짚으며","키키가 말하듯 친근하게","짧고 다정하게","친구 입장을 조금 더 자세히"]};
+const MYVIEW2={E:"나는 함께 이야기하며 힘을 얻는 편이라, 대화가 끊기면 마음도 같이 멈춘 것 같았을 수 있어요.",I:"나는 마음을 안으로 차곡차곡 쌓는 편이라, 말하지 못한 마음이 더 무겁게 느껴졌을 수 있어요.",S:"나는 실제로 있었던 말과 행동을 잘 기억하는 편이라, 그 장면이 사진처럼 떠올랐을 수 있어요.",N:"나는 숨은 뜻을 찾는 편이라, '왜 그랬을까?' 하는 생각이 꼬리를 물었을 수 있어요.",T:"나는 이유를 알고 싶은 편이라, 납득이 안 돼서 더 답답했을 수 있어요.",F:"나는 다른 사람 마음을 잘 느끼는 편이라, 내 마음도 그만큼 크게 흔들렸을 수 있어요.",J:"나는 약속과 계획을 소중히 여기는 편이라, 예상 밖의 일이 더 크게 다가왔을 수 있어요.",P:"나는 그때그때 마음을 따르는 편이라, 갑자기 생긴 서운함이 더 크게 느껴졌을 수 있어요."};
+function fill(t,ev){return t.replace("%s",ev)}
+function studentResult(i){
+  const c=CATS[i];lastCat=c[1];
+  const fv=[0,1,2,3].map(k=>fmbti[k]).filter(l=>l&&l!=="X"&&FRIEND[l]);
+  const diff=fv.filter((l,k)=>mbti.indexOf(l)<0);
+  const pickF=(diff.length?diff:fv).slice(0,2).map(l=>"친구가 "+FRIEND[l]);
+  const ft=fullType(fmbti),mt=fullType(mbti);
+  const friendView=ft?`${TYPES[ft][1]} 같은 친구라면, ${TYPES[ft][3]}`:(pickF.length?pickF.join(" "):"친구 성향을 몰라도 괜찮아요. 친구에게도 나는 모르는 사정이나 다른 생각이 있었을 수 있어요.");
+  const axisL=mbti[c[2]];const myL=(axisL&&axisL!=="X")?axisL:[...mbti].find(l=>MYVIEW[l]);
+  const evi=sit.ev&&EVENTS[c[1]==="잘 모르겠음"?"기타":c[1]]?EVENTS[c[1]==="잘 모르겠음"?"기타":c[1]].indexOf(sit.ev):0;
+  const ax=evi%2===0?c[2]:(c[2]+2)%4, lt=mbti[ax]&&mbti[ax]!=="X"?mbti[ax]:[...mbti].find(l=>MYVIEW[l]);
+  const echo=sit.ev?` 그래서 '${evText(sit.ev)}' 같은 일이 마음에 더 오래 남았을 수 있어요.`:"";
+  const letters=[...mbti].filter(l=>MYVIEW[l]);const lt2=letters.length?vary("myL",letters):lt;
+  const mvText=lt2?vary("myV",[MYVIEW[lt2],MYVIEW2[lt2]]):"";
+  const echo2=sit.ev?" "+fill(vary("echo",V.echo),evText(sit.ev)):"";
+  const myView=lt2?(mt?`${TYPES[mt][0]} ${TYPES[mt][1]}인 `:"")+mvText+echo2:(myL?MYVIEW[myL]:"이런 일이 마음에 남는 건 내가 친구 관계를 소중하게 여긴다는 뜻이에요.");
+  const e=EVR[sit.ev],pt=PLACE_TIP[sit.place]||"";
+  const tForms=ft?[`${TYPES[ft][0]} ${TYPES[ft][1]} 같은 친구라면, ${TYPES[ft][3]}`,`${TYPES[ft][0]} ${TYPES[ft][1]} 같은 친구는 겉으로 "${TYPES[ft][6]}" 해도, 속으로는 "${TYPES[ft][7]}"일 수 있어요.`,`${TYPES[ft][0]} ${TYPES[ft][1]} 같은 친구에게는 이렇게 다가가 봐요: ${TYPES[ft][5]}`]:[];
+  const more=vary("more",V.more);
+  if(e) renderResult({comfort:vary("open",V.open)+" "+e[0]+(pt?" "+pt:"")+" "+vary("close",V.close),
+    friendView:e[1]+(more?" "+more:"")+(tForms.length?" "+vary("tf",tForms):""),myView,
+    reflectQ:e[2]+" / "+vary("q",V.q),keySentence:e[3]},true);
+  else renderResult({comfort:c[3]+" 그렇게 느낀 건 아주 자연스러운 일이에요.",friendView,myView,reflectQ:c[6],keySentence:c[5]},true);
+  if(location.hash==="#check") $("res").insertAdjacentHTML("afterbegin",`<div class="tip">🔧 선생님 확인: 미리 만든 카드</div>`);
+  log(c[1],"N","N");
+}
+const EVR={"내 의견을 별로라고 했을": ["용기 내서 꺼낸 생각에 '별로'라는 말을 들으면 마음이 쿵 내려앉죠.", "친구는 의견이 별로라는 뜻이 아니라, 자기 생각과 달라서 짧게 말했을 수도 있어요.", "친구 말에서 가장 마음에 걸린 단어는 무엇이었나요?", "내 의견을 별로라고 했을 때, 나는 속상했어. 어떤 점이 아쉬운지 말해 주면 좋겠어."], "내 말을 끝까지 안 들었을": ["말하는 도중에 끊기면 내가 중요하지 않은 사람처럼 느껴질 수 있어요.", "친구는 하고 싶은 말이 떠올라 마음이 급했을 수 있어요.", "끝까지 들어 줬다면 친구에게 무엇을 꼭 말하고 싶었나요?", "내 말을 끝까지 듣지 않았을 때, 나는 답답했어. 내 말이 끝날 때까지 기다려 주면 좋겠어."], "내 생각은 묻지 않고 정했을": ["나도 함께하는 일인데 내 생각을 묻지 않으면 빠진 느낌이 들죠.", "친구는 빨리 정해야 한다는 생각에 모두에게 묻는 걸 놓쳤을 수 있어요.", "정할 때 나는 어떤 의견을 내고 싶었나요?", "내 생각을 묻지 않고 정했을 때, 나는 서운했어. 다음엔 내 생각도 물어봐 주면 좋겠어."], "내 아이디어를 자기 것처럼 말했을": ["내가 떠올린 생각인데 인정받지 못하면 억울한 마음이 드는 게 당연해요.", "친구는 이야기를 나누다 보니 누구 생각이었는지 헷갈렸을 수도 있어요.", "내 아이디어가 내 것이라는 걸 누가 알아주면 마음이 풀릴까요?", "내 아이디어를 네 생각처럼 말했을 때, 나는 억울했어. 내가 낸 생각이라고 함께 말해 주면 좋겠어."], "다수결로 내 의견만 빠졌을": ["규칙대로 정한 걸 알아도, 내 의견만 빠지면 쓸쓸한 마음이 들 수 있어요.", "친구들은 내 의견이 싫어서가 아니라 다른 의견에 손을 들었을 뿐일 수 있어요.", "빠진 내 의견 가운데 꼭 살리고 싶은 부분이 있나요?", "다수결로 내 의견이 빠졌을 때, 나는 아쉬웠어. 내 의견 중 좋은 점도 조금 넣어 주면 좋겠어."], "나에게 큰 소리를 냈을": ["갑자기 큰 소리를 들으면 깜짝 놀라고 무서운 마음까지 들 수 있어요.", "친구는 자기 마음이 너무 급하거나 화가 나서 목소리 조절을 못 했을 수 있어요.", "큰 소리를 들은 순간, 내 몸과 마음은 어땠나요?", "나에게 큰 소리를 냈을 때, 나는 놀라고 무서웠어. 작은 목소리로 말해 주면 좋겠어."], "내 물건을 허락 없이 만졌을": ["소중한 내 물건을 허락 없이 만지면 내 공간을 침범당한 것 같죠.", "친구는 별생각 없이 궁금해서, 또는 잠깐 빌리려고 만졌을 수 있어요.", "그 물건이 나에게 특별한 이유가 있나요?", "내 물건을 허락 없이 만졌을 때, 나는 불편했어. 먼저 물어봐 주면 좋겠어."], "놀이 규칙을 갑자기 바꿨을": ["정해진 규칙이 갑자기 바뀌면 불공평하다는 생각이 들죠.", "친구는 놀이를 더 재미있게 하고 싶어서 즉흥적으로 바꿨을 수 있어요.", "규칙을 바꿀 때 어떤 방법이면 나도 괜찮았을까요?", "놀이 규칙을 갑자기 바꿨을 때, 나는 당황했어. 바꾸기 전에 같이 정하면 좋겠어."], "장난이 너무 심했을": ["친구는 장난이었어도 내가 싫었다면, 싫은 게 맞아요.", "친구는 내가 싫어하는 줄 모르고 재미있다고만 생각했을 수 있어요.", "장난이 어디까지였으면 괜찮았을까요?", "장난이 너무 심했을 때, 나는 기분이 상했어. 내가 싫다고 하면 멈춰 주면 좋겠어."], "내 말에 화를 냈을": ["나는 그냥 말한 건데 친구가 화를 내면 어리둥절하고 속상하죠.", "친구는 내 말을 다른 뜻으로 들었거나, 그 전부터 기분이 안 좋았을 수 있어요.", "내가 한 말은 원래 어떤 뜻이었나요?", "내 말에 화를 냈을 때, 나는 당황했어. 왜 화가 났는지 알려 주면 좋겠어."], "나만 빼고 놀았을": ["나만 빠졌다는 느낌은 마음을 아주 쓸쓸하게 만들어요.", "친구는 나를 일부러 뺀 게 아니라, 이미 놀이가 시작되어 부르는 걸 놓쳤을 수 있어요.", "그때 친구들에게 어떤 말을 듣고 싶었나요?", "나만 빼고 놀았을 때, 나는 쓸쓸했어. 다음엔 나도 같이 불러 주면 좋겠어."], "약속을 잊어버렸을": ["기다렸던 약속이 잊히면 나도 함께 잊힌 것 같아 속상하죠.", "친구는 다른 일이 생겨서 깜빡했을 뿐, 나를 가볍게 여긴 건 아닐 수 있어요.", "그 약속이 나에게 왜 중요했나요?", "약속을 잊어버렸을 때, 나는 서운했어. 다음엔 꼭 기억해 주면 좋겠어."], "내 인사를 못 본 척했을": ["인사를 했는데 대답이 없으면 무시당한 것 같아 마음이 쿵 하죠.", "친구는 정말 못 봤거나, 다른 생각에 빠져 있었을 수도 있어요.", "친구가 일부러 그런 걸까요, 아니면 다른 이유가 있었을까요?", "내 인사에 대답이 없었을 때, 나는 서운했어. 나도 반갑게 인사받고 싶어."], "다른 친구랑만 이야기했을": ["친한 친구가 다른 친구하고만 이야기하면 내 자리가 없어진 것 같죠.", "친구는 새로운 친구와도 친해지고 싶었을 뿐, 나와 멀어지려는 건 아닐 수 있어요.", "셋이 함께 이야기하려면 내가 먼저 해 볼 수 있는 말은?", "다른 친구랑만 이야기할 때, 나는 조금 외로웠어. 나랑도 이야기해 주면 좋겠어."], "내 비밀을 다른 친구에게 말했을": ["믿고 말한 비밀이 퍼지면 배신당한 것처럼 아프고 창피하죠.", "친구는 비밀인 줄 몰랐거나, 별일 아니라고 가볍게 생각했을 수 있어요.", "친구가 이제 어떻게 해 주면 다시 믿을 수 있을까요?", "내 비밀을 다른 친구에게 말했을 때, 나는 상처받았어. 내 비밀은 지켜 주면 좋겠어."], "내 말을 다르게 알아들었을": ["내 뜻과 다르게 전해지면 답답하고 억울하죠.", "친구는 내 말투나 표정 때문에 다른 뜻으로 받아들였을 수 있어요.", "내가 진짜 하고 싶었던 말을 한 문장으로 말해 본다면?", "내 말을 다르게 알아들었을 때, 나는 답답했어. 내 뜻을 다시 설명할 기회를 주면 좋겠어."], "내가 하지 않은 일을 했다고 했을": ["하지 않은 일로 오해받으면 억울해서 눈물이 날 만큼 속상할 수 있어요.", "친구는 정확히 보지 못해서 착각했을 수 있어요.", "내가 하지 않았다는 걸 차분하게 어떻게 보여 줄 수 있을까요?", "내가 하지 않은 일을 했다고 했을 때, 나는 억울했어. 내 이야기도 들어 주면 좋겠어."], "내 장난을 진짜로 받아들였을": ["나는 웃자고 한 건데 친구가 속상해하면 나도 당황스럽죠.", "친구에게는 그 장난이 진짜처럼 들려 마음이 아팠을 수 있어요.", "친구 입장에서 그 장난은 어떻게 들렸을까요?", "내 장난을 진짜로 받아들였을 때, 나는 당황했어. 상처를 줬다면 미안하고, 내 뜻을 알아주면 좋겠어."], "내 표정을 보고 화났다고 했을": ["화나지 않았는데 화났다는 말을 들으면 억울하고 답답하죠.", "친구는 내 표정을 보고 혹시 자기 때문에 화났을까 걱정했을 수 있어요.", "그때 내 진짜 마음은 어땠나요?", "내 표정을 보고 화났다고 했을 때, 나는 억울했어. 궁금하면 먼저 물어봐 주면 좋겠어."], "소문만 듣고 나를 오해했을": ["나에게 묻지도 않고 소문을 믿으면 정말 서운하고 억울하죠.", "친구는 소문을 듣고 놀라서 확인할 생각을 못 했을 수 있어요.", "친구가 소문 대신 나에게 직접 물었다면 어떻게 답하고 싶었나요?", "소문만 듣고 나를 오해했을 때, 나는 속상했어. 나에게 직접 물어봐 주면 좋겠어."], "내 발표 중에 웃었을": ["떨리는 마음으로 발표하는데 웃음소리가 들리면 얼굴이 화끈하죠.", "친구는 나를 놀린 게 아니라 다른 일로 웃었거나, 재미있어서 웃었을 수 있어요.", "그 웃음이 어떤 뜻이었는지 확인해 본다면 누구에게 물어볼까요?", "내 발표 중에 웃었을 때, 나는 창피했어. 발표할 땐 끝까지 들어 주면 좋겠어."], "내가 말할 때 딴짓을 했을": ["열심히 말하는데 듣지 않으면 내 말이 허공에 사라진 것 같죠.", "친구는 집중하기 어려운 상태였거나 다른 게 궁금했을 수 있어요.", "친구가 내 말을 들어 줬다면 어떤 표정을 지었으면 좋겠나요?", "내가 말할 때 딴짓을 했을 때, 나는 서운했어. 내 쪽을 보고 들어 주면 좋겠어."], "내 실수를 크게 말했을": ["실수는 누구나 하는데, 그걸 크게 말하면 숨고 싶어지죠.", "친구는 별일 아니라고 생각해서 아무렇지 않게 말했을 수 있어요.", "내 실수를 친구가 어떻게 대해 줬으면 좋았을까요?", "내 실수를 크게 말했을 때, 나는 창피했어. 조용히 알려 주면 좋겠어."], "내 대답을 듣고 수군거렸을": ["수군거리는 소리는 무슨 말인지 몰라서 더 신경 쓰이고 불안하죠.", "친구들은 내 이야기가 아니라 다른 이야기를 나눴을 수도 있어요.", "수군거림이 신경 쓰일 때 내 마음을 지키는 방법은 무엇일까요?", "내 대답을 듣고 수군거렸을 때, 나는 불안했어. 궁금한 게 있으면 나에게 말해 주면 좋겠어."], "같이 놀자는 말에 대답이 없었을": ["용기 내서 건넨 말에 대답이 없으면 마음이 오그라들죠.", "친구는 내 말을 못 들었거나, 갑자기 들어서 어떻게 답할지 몰랐을 수 있어요.", "다음에 말을 건넨다면 어떤 말로 시작해 볼까요?", "같이 놀자는 말에 대답이 없었을 때, 나는 쑥스럽고 속상했어. 대답해 주면 좋겠어."], "나만 모르는 이야기를 했을": ["다들 아는 이야기를 나만 모르면 혼자 밖에 서 있는 느낌이 들죠.", "친구들은 내가 모른다는 걸 미처 생각하지 못했을 수 있어요.", "친구들에게 '그게 뭐야?' 하고 물어본다면 어떨까요?", "나만 모르는 이야기를 할 때, 나는 소외된 느낌이었어. 나에게도 알려 주면 좋겠어."], "내가 다가갔을 때 자리를 피했을": ["다가갔는데 친구가 자리를 뜨면 거절당한 것 같아 아프죠.", "친구는 마침 다른 일이 있었거나, 낯가림이 있어 어색했을 수 있어요.", "친구가 편하게 느끼려면 어떻게 다가가면 좋을까요?", "내가 다가갔을 때 자리를 피했을 때, 나는 서운했어. 너랑 조금씩 친해지고 싶어."], "나에게 먼저 말을 걸어 주지 않았을": ["친구가 먼저 다가와 주길 기다리는 마음, 참 애타죠.", "친구도 나처럼 먼저 말 걸기가 쑥스러워 기다리고 있었을 수 있어요.", "내가 먼저 건넬 수 있는 아주 작은 말은 무엇일까요?", "먼저 말을 걸어 주지 않았을 때, 나는 조금 외로웠어. 우리 같이 이야기하면 좋겠어."], "그 일 이후로 나와 말을 안 했을": ["말을 안 하는 시간이 길어지면 마음도 점점 무거워지죠.", "친구도 어떻게 다시 말을 걸어야 할지 몰라 망설이고 있을 수 있어요.", "다시 말을 건넬 때 첫마디로 어떤 말이 좋을까요?", "그 일 이후로 말을 안 할 때, 나는 마음이 무거웠어. 다시 이야기하면 좋겠어."], "내 사과를 받아 주지 않았을": ["용기 내서 사과했는데 받아 주지 않으면 허탈하고 속상하죠.", "친구는 아직 마음이 풀릴 시간이 더 필요했을 수 있어요.", "친구에게 시간을 준다면 얼마나 기다려 볼 수 있을까요?", "내 사과를 받아 주지 않았을 때, 나는 속상했어. 마음이 풀리면 다시 이야기해 주면 좋겠어."], "예전처럼 나를 대하지 않았을": ["예전과 달라진 친구를 보면 우리 사이가 멀어진 것 같아 슬프죠.", "친구도 그 일 때문에 어색해서 어떻게 해야 할지 모르고 있을 수 있어요.", "예전처럼 지내려면 내가 먼저 해 볼 수 있는 작은 일은?", "예전처럼 대하지 않을 때, 나는 슬펐어. 우리 다시 편하게 지내면 좋겠어."], "나도 모르게 상처 주는 말을 했던 게 생각났을": ["내 잘못을 돌아보는 건 아주 용기 있는 일이에요.", "친구는 그 말 때문에 마음이 아팠지만, 내 진심을 알면 달라질 수 있어요.", "친구에게 어떤 마음을 전하고 싶나요?", "내가 상처 주는 말을 했던 게 생각났을 때, 나는 미안했어. 내 사과를 들어 주면 좋겠어."], "나에게 그렇게 말했을": ["친구의 말이 마음에 오래 남아 있다면, 그만큼 소중한 친구라는 뜻이에요.", "친구는 그 말이 나에게 이렇게 크게 남을 줄 몰랐을 수 있어요.", "그 말을 들었을 때 내 마음에 가장 크게 남은 느낌은?", "네가 그렇게 말했을 때, 나는 마음이 아팠어. 내 마음도 알아주면 좋겠어."], "그렇게 행동했을": ["친구의 행동이 계속 떠오른다면 마음이 많이 쓰였다는 거예요.", "친구에게도 내가 모르는 사정이 있었을 수 있어요.", "친구의 행동에서 가장 마음에 걸린 부분은 무엇인가요?", "네가 그렇게 행동했을 때, 나는 속상했어. 내 마음도 생각해 주면 좋겠어."], "내 마음을 몰라 줬을": ["내 마음을 몰라 주면 혼자인 것 같아 외롭죠.", "친구는 내 마음을 몰랐을 뿐, 알게 되면 달라질 수 있어요.", "친구가 내 마음을 알게 된다면 무엇을 알아줬으면 하나요?", "내 마음을 몰라 줬을 때, 나는 외로웠어. 내 이야기를 들어 주면 좋겠어."]};
+const PLACE_TIP={"교실에서": "", "모둠 활동 때": "모둠 활동은 함께 정할 일이 많아서 생각이 부딪히기 쉬워요.", "쉬는 시간에": "쉬는 시간은 짧고 바빠서, 서로 마음을 살필 틈이 부족할 때가 많아요.", "체육 시간에": "체육 시간에는 이기고 싶은 마음이 커져서 말이 거칠어지기 쉬워요.", "급식실에서": "", "방과 후에": "", "단톡방에서": "단톡방에서는 표정과 목소리가 보이지 않아서, 같은 말도 더 차갑게 느껴질 수 있어요."};
+/* 4-2. 시연용 작전 (AI 판단) */
+function askAI(text,followup){
+  show("s-loading");
+  const call=CONFIG.apiUrl
+    ? Promise.race([fetch(CONFIG.apiUrl,{method:"POST",body:JSON.stringify({action:"ai",mode:CONFIG.mode,mbti,fmbti,ctx:typeCtx()+" / [답변 요청] 이번에는 "+vary("style",V.style)+" 써 줘. 아래 고른 상황의 구체적인 행동을 꼭 짚고, 예시 문장을 따라 쓰지 말고 이 학생에게만 하는 말로 새롭게 써 줘. / 고른 상황: "+(sit.cat>=0?CATS[sit.cat][1]:"")+" · "+sit.ev+(sit.place?" · "+sit.place:""),text:maskPII(text),followup:maskPII(followup)})}).then(r=>r.json()),new Promise((_,rj)=>setTimeout(()=>rj(0),25000))])
+    : solarDirect(text,followup).then(r=>{log(r.urgent?"긴급 도움":(r.danger?"선생님 상담":(r.category||"기타")),(r.danger||r.urgent)?"Y":"N","N");return r});
+  call.then(r=>{
+      if(!r||r.ok===false) throw 0;
+      if(r.danger||r.urgent){$("urgentBox").classList.toggle("hide",!r.urgent);show("s-help");return}
+      if(r.needQuestion&&!followup){$("askQ").textContent=r.question||"조금 더 자세히 알려 줄래요?";$("ans").value="";show("s-ask");return}
+      lastCat=(sit.cat>=0?CATS[sit.cat][1]:"")||r.category||"기타";
+      renderResult(r,false,r.nameNotice);
+      if(location.hash==="#check") $("res").insertAdjacentHTML("afterbegin",`<div class="tip">🔧 선생님 확인: AI 답</div>`);
+    }).catch(()=>{
+      if(sit.cat>=0) studentResult(sit.cat); else ruleCats(firstText+" "+(followup||""),"");
+    });
+}
+$("ansDone").onclick=()=>{const a=$("ans").value.trim();if(DANGER.test(a)){goHelp(a);return}askAI(firstText,a||"잘 모르겠어요")};
+
+function translator(){const ft=fullType(fmbti);if(!ft) return "";const c=TYPES[ft];
+  return `<div class="row" style="background:#f3edff"><div class="ic">🔍</div><div><b>${c[0]} ${c[1]}의 마음 통역기</b>겉으로는 <b style="display:inline;color:var(--ink);font-size:15px">"${esc(c[6])}"</b><br>속마음은 <b style="display:inline;color:#6a3fc9;font-size:15px">"${esc(c[7])}"</b>일 수도 있어요.<br><span class="muted">💡 ${esc(c[5])}</span></div></div>`}
+function vsCard(){const mt=fullType(mbti),ft=fullType(fmbti);if(!mt&&!ft) return "";
+  const side=(t,who)=>t?`<div class="side"><div class="em">${TYPES[t][0]}</div><b>${TYPES[t][1]}</b><small>${who} · ${t}</small><small style="color:var(--ink);font-weight:700;margin-top:4px">💬 "${TYPES[t][6]}"</small></div>`:`<div class="side"><div class="em">🧭</div><b>비밀 탐험가</b><small>${who} · 잘 모르겠음</small></div>`;
+  return `<div class="vs">${side(mt,"나")}<div style="font-weight:900">↔</div>${side(ft,"친구")}</div>`}
+function renderResult(r,isRule,nameNotice){
+  if($("resKiki"))$("resKiki").textContent=vary("kiki",V.kiki);
+  const comfort=r.comfort||r.empathy||"", fview=r.friendView||"", mview=r.myView||r.strength||"", rq=r.reflectQ||r.action||"";
+  const ks=String(r.keySentence||"").replace(/^["']|["']$/g,"");
+  $("res").innerHTML=
+    (nameNotice?`<div class="tip">✋ 이름은 적지 않아도 돼요. '친구'라고 써도 충분해요.</div>`:"")+
+    `<div class="row" style="background:#fff7e6"><div class="ic">🤗</div><div><b>마음 안아주기</b>${esc(comfort)}</div></div>`+
+    vsCard()+
+    (fview?`<div class="row"><div class="ic">👀</div><div><b>친구 입장에서 보면</b>${esc(fview)}</div></div>`:"")+
+    (mview?`<div class="row"><div class="ic">🪞</div><div><b>내 마음 들여다보기</b>${esc(mview)}</div></div>`:"")+
+    `<details class="more"><summary>더 보기 · 마음 통역기와 스스로 질문</summary>`+translator()+
+    (rq?`<div class="row" style="background:#eef7f0"><div class="ic">🌱</div><div><b>스스로에게 물어보기</b>${esc(rq).split(" / ").join("<br>")}</div></div>`:"")+`</details>`+
+    `<p class="muted" style="margin-top:10px">친구 성향은 짐작일 뿐이에요. 친구를 유형으로 판단하지 않아요.</p>`;
+  $("editBox").open=!sit.ev;["m1","m2","m3"].forEach(id=>{$(id).value="";$(id).readOnly=true;$(id).placeholder="아래에서 골라요"});$("m1").placeholder="위에서 골라요";$("selfWrite").style.display="";
+  document.querySelectorAll("[data-fill]").forEach(x=>x.classList.remove("on"));evChips();$("mPreview").style.display="none";
+  if(sit.ev){$("m1").value=sit.ev;const b=document.querySelector(`[data-fill="m1"][data-v="${sit.ev}"]`);if(b)b.classList.add("on");
+    const CF={"의견 차이":"답답한","다툼":"속상한","서운함":"서운한","오해":"억울한","발표·말하기":"창피한","새 친구 사귀기":"외로운","화해":"걱정되는"};
+    const CW={"의견 차이":"내 말을 끝까지 들어 주면","다툼":"조금 기다려 주면","서운함":"같이 하자고 말해 주면","오해":"어떤 점이 아쉬운지 말해 주면","발표·말하기":"내 말을 끝까지 들어 주면","새 친구 사귀기":"같이 하자고 말해 주면","화해":"조금 기다려 주면"};
+    const cat=sit.cat>=0?CATS[sit.cat][1]:"";const fe=CF[cat]||"속상한";
+    const e=EVR[sit.ev];let w=CW[cat]||"내 마음도 알아주면";
+    if(e){const seg=e[3].split(/\.\s*/).filter(Boolean).pop()||"";if(/좋겠어$/.test(seg))w=seg.replace(/\s*좋겠어$/,"")}
+    $("m2").value=fe;$("m3").value=w;
+    document.querySelectorAll(`[data-fill="m2"]`).forEach(x=>x.classList.toggle("on",x.dataset.v===fe));
+    document.querySelectorAll(`[data-fill="m3"]`).forEach(x=>x.classList.toggle("on",x.dataset.v===w));
+    preview()}$("meMsg").innerHTML="";$("meDone").disabled=false;
+  show("s-result");
+}
+
+/* 7. 나-전달법으로 마음 정리 */
+const PLACES=["교실에서", "모둠 활동 때", "쉬는 시간에", "체육 시간에", "급식실에서", "방과 후에", "단톡방에서"];
+const FEELS=["속상한","서운한","화가 난","억울한","당황한","외로운","창피한","걱정되는","답답한"];
+const WISHES=["내 말을 끝까지 들어 주면","같이 하자고 말해 주면","어떤 점이 아쉬운지 말해 주면","다음엔 미리 물어봐 주면","사과해 주면","조금 기다려 주면"];
+const EVENTS={"의견 차이": ["내 의견을 별로라고 했을", "내 말을 끝까지 안 들었을", "내 생각은 묻지 않고 정했을", "내 아이디어를 자기 것처럼 말했을", "다수결로 내 의견만 빠졌을"], "다툼": ["나에게 큰 소리를 냈을", "내 물건을 허락 없이 만졌을", "놀이 규칙을 갑자기 바꿨을", "장난이 너무 심했을", "내 말에 화를 냈을"], "서운함": ["나만 빼고 놀았을", "약속을 잊어버렸을", "내 인사를 못 본 척했을", "다른 친구랑만 이야기했을", "내 비밀을 다른 친구에게 말했을"], "오해": ["내 말을 다르게 알아들었을", "내가 하지 않은 일을 했다고 했을", "내 장난을 진짜로 받아들였을", "내 표정을 보고 화났다고 했을", "소문만 듣고 나를 오해했을"], "발표·말하기": ["내 발표 중에 웃었을", "내가 말할 때 딴짓을 했을", "내 실수를 크게 말했을", "내 대답을 듣고 수군거렸을"], "새 친구 사귀기": ["같이 놀자는 말에 대답이 없었을", "나만 모르는 이야기를 했을", "내가 다가갔을 때 자리를 피했을", "나에게 먼저 말을 걸어 주지 않았을"], "화해": ["그 일 이후로 나와 말을 안 했을", "내 사과를 받아 주지 않았을", "예전처럼 나를 대하지 않았을", "나도 모르게 상처 주는 말을 했던 게 생각났을"], "기타": ["나에게 그렇게 말했을", "그렇게 행동했을", "내 마음을 몰라 줬을"]};
+function evChips(){const list=EVENTS[lastCat==="잘 모르겠음"?"기타":lastCat]||EVENTS["기타"];$("evChips").innerHTML=list.map(t=>`<button class="chip" data-fill="m1" data-v="${t}">${t}</button>`).join("")}
+$("selfWrite").onclick=()=>{["m1","m2","m3"].forEach(id=>{$(id).readOnly=false;$(id).placeholder="직접 써도 돼요"});$("selfWrite").style.display="none";$("m1").focus()};
+$("feelChips").innerHTML=FEELS.map(t=>`<button class="chip" data-fill="m2" data-v="${t}">${t}</button>`).join("");
+$("wishChips").innerHTML=WISHES.map(t=>`<button class="chip" data-fill="m3" data-v="${t}">${t}</button>`).join("");
+document.addEventListener("click",e=>{const b=e.target.closest("[data-fill]");if(!b)return;$(b.dataset.fill).value=b.dataset.v;
+  document.querySelectorAll(`[data-fill="${b.dataset.fill}"]`).forEach(x=>x.classList.toggle("on",x===b));preview()});
+["m1","m2","m3"].forEach(id=>$(id).addEventListener("input",preview));
+function iMsg(){const a=$("m1").value.trim(),b=$("m2").value.trim().replace(/마음$/,"").trim(),c=$("m3").value.trim().replace(/좋겠어\.?$/,"").trim();
+  return {a,b,c,text:`네가 ${a} 때, 나는 ${b} 마음이 들었어. ${c} 좋겠어.`}}
+function preview(){const m=iMsg();if(!m.a&&!m.b&&!m.c){$("mPreview").style.display="none";return}
+  const f=v=>v?esc(v):`<span style="color:#aaa">___</span>`;
+  $("mPreview").style.display="block";$("mPreview").innerHTML=`🗣️ <b>네가 ${f(m.a)} 때, 나는 ${f(m.b)} 마음이 들었어. ${f(m.c)} 좋겠어.</b>`}
+const BLAME=/때문에|맨날|항상|넌 왜|너는 왜|너 왜|바보|이기적/;
+const FEEL_R={"속상한":"속상한 마음을 꾹 참지 않고 꺼내 줬네요.","서운한":"서운했던 마음을 부드럽게 말로 바꿨어요.","화가 난":"화가 났는데도 탓하는 말 대신 내 마음을 골랐어요. 정말 어려운 일이에요.","억울한":"억울한 마음을 차분하게 정리해 냈어요.","당황한":"당황스러웠던 순간을 다시 들여다봤네요.","외로운":"외로웠던 마음을 솔직하게 보여 줬어요. 그 마음, 키키가 꼭 안아 줄게요.","창피한":"창피했던 마음까지 이름 붙이는 건 큰 용기예요.","걱정되는":"걱정되는 마음을 먼저 알아차렸네요.","답답한":"답답했던 마음을 한 문장으로 풀어냈어요."};
+const CLOSE=["마음이 준비되면 그때 전해도 괜찮아요.","이 문장이 오늘 내 마음을 가득 채워 줬어요. 소중히 간직해요.","친구에게 전할지 말지는 내가 정해도 돼요.","친구에게 전하기 전에 한 번 소리 내어 읽어 봐요.","전하지 않아도 괜찮아요. 내 마음을 안 것만으로도 한 걸음이에요.","선생님께 먼저 보여 드려도 좋아요."];
+function localReply(m){
+  const tip0=BLAME.test(m.a)?" 하나만 더! 🎬 칸에 '맨날', '때문에' 같은 말 대신 있었던 일만 쓰면 친구가 더 잘 들어 줄 거예요.":"";
+  const f=Object.keys(FEEL_R).find(k=>m.b.includes(k.replace(/한$|난$|는$/,"")));
+  const head=vary("rh",["",""," 키키가 잘 읽었어요!"," 와, 문장이 완성됐어요!"]).trim()+" "+(f?FEEL_R[f]:`'${m.b}' 마음에 이름을 붙여 줬네요.`);
+  const wish=m.c?` 바람을 "${m.c} 좋겠어"로 분명하게 말해서, 친구도 무엇을 하면 되는지 알 수 있어요.`:"";
+  return head+wish+" "+vary("close2",CLOSE)+tip0;
+}
+function localReply_old(m){
+  const tip=BLAME.test(m.a)?" 하나만 더! 🎬 칸에 '맨날', '때문에' 같은 말 대신 있었던 일만 쓰면 친구가 더 잘 들어 줄 거예요.":"";
+  if(/화가|억울|짜증|싫/.test(m.b)) return "화가 난 마음인데도 친구를 탓하지 않고 나-전달법으로 정리해 냈어요. 정말 대단해요. 지금 바로 친구에게 전하지 않아도 괜찮아요."+tip;
+  return `'${m.b}' 마음을 솔직하게 이름 붙여 줬네요. 이 문장은 친구를 탓하지 않으면서 내 마음과 바람을 분명하게 전해요. 마음이 준비되면 그때 써 봐도 돼요.`+tip;
+}
+$("meDone").onclick=()=>{
+  const m=iMsg();
+  {const own=m.text.split(sit.ev||"\u0000").join("");if(DANGER.test(own)){goHelp(m.text);return}}
+  if(m.a.length<2||m.b.length<1||m.c.length<2){$("meMsg").innerHTML=`<div class="tip">🎬 있었던 일, 💗 내 마음, 🙏 내 바람에서 하나씩 골라 주세요.</div>`;return}
+  if(badgeGiven) return;
+  badgeGiven=true;keys++;try{localStorage.setItem("maumKeys",keys)}catch(e){}
+  showKeys();log(lastCat,"N","Y");$("meDone").disabled=true;confetti();drawMap("done");
+  const ft=fullType(fmbti),mt=fullType(mbti);const nf=unlock(ft),nm=unlock(mt);
+  const nw=[nf&&ft,nm&&mt].filter(Boolean).map(t=>`${TYPES[t][0]} ${TYPES[t][1]}`);
+  const ch=STORY.find(c=>c[0]===keys),nx=nextChap();
+  const head=`<div class="badge">🔑</div><p style="text-align:center;font-weight:800">마음 충전 완료! (모두 ${keys}번)</p>`+
+    (ch?`<div class="story"><b>${ch[1]} 새 이야기: ${ch[2]}</b><br>${ch[3]}</div>`:`<div class="story">${nx?`${nx[1]} <b style="font-size:inherit;font-family:inherit">${nx[2]}</b>까지 충전 ${nx[0]-keys}번 남았어요!`:"마음 마을이 모두 되살아났어요! 🎉"}${gauge()}</div>`)+
+    (nw.length?`<div class="newchar">📖 마음 도감에 새 친구가 들어왔어요!<br>${nw.join(" · ")}<br><span class="muted">지금 ${dex.length}/16</span></div>`:"");
+  const box=t=>`<div class="row" style="background:#fff7e6"><div class="ic">💌</div><div><b>내 마음에 보내는 답장</b>${esc(t)}</div></div>`;
+  if(!CONFIG.apiUrl){$("meMsg").innerHTML=head+box(localReply(m));return}
+  $("meMsg").innerHTML=head+`<div class="tip">💌 답장을 쓰고 있어요<span class="dots"></span></div>`;
+  fetch(CONFIG.apiUrl,{method:"POST",body:JSON.stringify({action:"reflect",text:maskPII(m.text)})}).then(r=>r.json()).then(r=>{
+    if(r&&r.danger){goHelp(m.text);return}
+    $("meMsg").innerHTML=head+box(r&&r.ok!==false&&r.reply?r.reply:localReply(m));
+  }).catch(()=>{$("meMsg").innerHTML=head+box(localReply(m))});
+};
+$("again").onclick=()=>{resetSit();
+  fpick={};fmbti="";$("frType").value="";document.querySelectorAll('.pick[data-g="fr"]').forEach(x=>x.classList.remove("on"));$("card_fr").style.display="none";$("fDone").disabled=true;show("s-intro")};
+$("helpBack").onclick=()=>show("s-intro");
+$("dexBtn").onclick=()=>{$("dexGrid").innerHTML=Object.keys(TYPES).map(t=>{const c=TYPES[t],on=dex.includes(t);
+  return `<div class="${on?"":"lock"}"><span class="em">${c[0]}</span>${on?c[1]:"???"}<br><span class="muted">${t}</span></div>`}).join("");show("s-dex")};
+$("dexBack").onclick=()=>show(prevSec);
+let note={};
+function noteReset(){note={};$("noteBack").textContent="← 돌아가기";document.querySelectorAll("[data-nt],[data-nw],[data-nh]").forEach(x=>x.classList.remove("on"));$("noteCard").innerHTML="";$("noteNow").style.display="none";$("noteMake").disabled=true;$("noteMake").style.display=""}
+$("noteBtn").onclick=()=>{noteReset();show("s-note")};
+$("noteBack").onclick=()=>{if(note.done){$("again").click()}else show("s-result")};
+document.addEventListener("click",e=>{const b=e.target.closest("[data-nt],[data-nw],[data-nh]");if(!b)return;
+  const k=b.dataset.nt?"t":b.dataset.nw?"w":"h",v=b.dataset.nt||b.dataset.nw||b.dataset.nh;note[k]=v;
+  b.parentElement.querySelectorAll(".chip").forEach(x=>x.classList.toggle("on",x===b));
+  $("noteNow").style.display=note.t==="😢 아주 많이"?"block":"none";$("noteMake").disabled=!(note.t&&note.w&&note.h)});
+$("noteMake").onclick=()=>{const st=sitText()||"친구 사이에 마음 쓰이는 일이 있었어요";const ks=($("m1").value&&$("m2").value)?iMsg():null;
+  $("noteCard").innerHTML=`<div class="ticket"><span class="stamp">✉️</span><h3>선생님께 드리는 마음 쪽지</h3>
+  📝 <b>있었던 일</b> ${esc(st)}<br>🌡️ <b>마음 온도</b> ${note.t}<br>⏰ <b>이야기하고 싶은 때</b> ${note.w}<br>👥 <b>누구와</b> ${note.h}`+
+  (ks&&ks.b?`<br>💗 <b>내 마음</b> ${esc(ks.b)} 마음`:"")+`</div>
+  <div class="tip">📱 <b>${note.w==="선생님이 편할 때"?"선생님과 눈이 마주칠 때":note.w}</b>에 이 화면을 선생님께 보여 줘. 선생님이 쪽지를 먼저 읽고, 네 이야기를 차분히 들을 준비를 할 수 있어.</div>`;
+  $("noteMake").style.display="none";note.done=true;$("noteBack").textContent="처음으로 돌아가기 ↺";
+  log("상담요청·"+({"쉬는 시간":"쉬는시간","점심시간":"점심","방과 후":"방과후","선생님이 편할 때":"편할때"}[note.w])+"·"+note.t.replace(/^\S+\s/,"").replace(/\s/g,""),note.t==="😢 아주 많이"?"Y":"N","N")};
+$("keys").onclick=()=>{const n=nextChap();$("storyList").innerHTML=`<div class="story"><b>🔋 지금까지 충전 ${keys}번</b><br>${n?`다음 이야기까지 충전 ${n[0]-keys}번 남았어요.`:"마을이 모두 되살아났어요! 🎉"}${gauge()}</div>`+storyHTML();show("s-story")};
+$("storyBack").onclick=()=>show(prevSec);
+showDexCount();drawMap("s-intro");
+/* 손그림 아이콘: 화면의 이모지를 손그림 그림으로 바꿔요 */
+const ICONS={"🐢": "<svg viewBox=\"0 0 40 40\" aria-hidden=\"true\"><path d=\"M7 27c0-9 5.8-16 13-16s13 7 13 16c0 3.5-5.8 5.5-13 5.5S7 30.5 7 27z\" fill=\"#bfe3b4\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><circle cx=\"15.5\" cy=\"22\" r=\"1.7\" fill=\"#3a2e2a\"/><circle cx=\"24.5\" cy=\"22\" r=\"1.7\" fill=\"#3a2e2a\"/><path d=\"M18.2 25.4q1.8 1.6 3.6 0\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\" fill=\"none\"/><ellipse cx=\"12.5\" cy=\"25\" rx=\"2.2\" ry=\"1.3\" fill=\"#ffb3c1\"/><ellipse cx=\"27.5\" cy=\"25\" rx=\"2.2\" ry=\"1.3\" fill=\"#ffb3c1\"/><path d=\"M12 16q8-7 16 0\" fill=\"#7cc57a\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M16 13.5l2 3M24 13.5l-2 3M20 11.5v4\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>", "🐻": "<svg viewBox=\"0 0 40 40\" aria-hidden=\"true\"><circle cx=\"11.5\" cy=\"13\" r=\"4\" fill=\"#e8c7a4\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><circle cx=\"28.5\" cy=\"13\" r=\"4\" fill=\"#e8c7a4\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M7 27c0-9 5.8-16 13-16s13 7 13 16c0 3.5-5.8 5.5-13 5.5S7 30.5 7 27z\" fill=\"#e8c7a4\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><circle cx=\"15.5\" cy=\"22\" r=\"1.7\" fill=\"#3a2e2a\"/><circle cx=\"24.5\" cy=\"22\" r=\"1.7\" fill=\"#3a2e2a\"/><path d=\"M18.2 25.4q1.8 1.6 3.6 0\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\" fill=\"none\"/><ellipse cx=\"12.5\" cy=\"25\" rx=\"2.2\" ry=\"1.3\" fill=\"#ffb3c1\"/><ellipse cx=\"27.5\" cy=\"25\" rx=\"2.2\" ry=\"1.3\" fill=\"#ffb3c1\"/><ellipse cx=\"20\" cy=\"26.5\" rx=\"4\" ry=\"2.6\" fill=\"#f7e3cf\"/><path d=\"M18.2 25.4q1.8 1.6 3.6 0\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\" fill=\"none\"/></svg>", "🦉": "<svg viewBox=\"0 0 40 40\" aria-hidden=\"true\"><path d=\"M10 16l1-7 5 4M30 16l-1-7-5 4\" fill=\"#cfc3e8\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M7 27c0-9 5.8-16 13-16s13 7 13 16c0 3.5-5.8 5.5-13 5.5S7 30.5 7 27z\" fill=\"#cfc3e8\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><circle cx=\"15.5\" cy=\"22\" r=\"1.7\" fill=\"#3a2e2a\"/><circle cx=\"24.5\" cy=\"22\" r=\"1.7\" fill=\"#3a2e2a\"/><ellipse cx=\"12.5\" cy=\"25\" rx=\"2.2\" ry=\"1.3\" fill=\"#ffb3c1\"/><ellipse cx=\"27.5\" cy=\"25\" rx=\"2.2\" ry=\"1.3\" fill=\"#ffb3c1\"/><circle cx=\"15\" cy=\"21\" r=\"4\" fill=\"#fff\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><circle cx=\"25\" cy=\"21\" r=\"4\" fill=\"#fff\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><circle cx=\"15\" cy=\"21\" r=\"1.6\" fill=\"#3a2e2a\"/><circle cx=\"25\" cy=\"21\" r=\"1.6\" fill=\"#3a2e2a\"/><path d=\"M18.5 25l1.5 2.5 1.5-2.5z\" fill=\"#f5c542\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>", "🦅": "<svg viewBox=\"0 0 40 40\" aria-hidden=\"true\"><path d=\"M7 24q-4 3-2 8l5-3M33 24q4 3 2 8l-5-3\" fill=\"#c9a27e\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M7 27c0-9 5.8-16 13-16s13 7 13 16c0 3.5-5.8 5.5-13 5.5S7 30.5 7 27z\" fill=\"#fffdf7\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><circle cx=\"15.5\" cy=\"22\" r=\"1.7\" fill=\"#3a2e2a\"/><circle cx=\"24.5\" cy=\"22\" r=\"1.7\" fill=\"#3a2e2a\"/><ellipse cx=\"12.5\" cy=\"25\" rx=\"2.2\" ry=\"1.3\" fill=\"#ffb3c1\"/><ellipse cx=\"27.5\" cy=\"25\" rx=\"2.2\" ry=\"1.3\" fill=\"#ffb3c1\"/><circle cx=\"15.5\" cy=\"20\" r=\"1.7\" fill=\"#3a2e2a\"/><circle cx=\"24.5\" cy=\"20\" r=\"1.7\" fill=\"#3a2e2a\"/><path d=\"M17.5 23.5h5l-2.5 4z\" fill=\"#f5c542\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>", "🐱": "<svg viewBox=\"0 0 40 40\" aria-hidden=\"true\"><path d=\"M10.5 15l-.5-7 6 4M29.5 15l.5-7-6 4\" fill=\"#f3e6d6\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M7 27c0-9 5.8-16 13-16s13 7 13 16c0 3.5-5.8 5.5-13 5.5S7 30.5 7 27z\" fill=\"#f3e6d6\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><circle cx=\"15.5\" cy=\"22\" r=\"1.7\" fill=\"#3a2e2a\"/><circle cx=\"24.5\" cy=\"22\" r=\"1.7\" fill=\"#3a2e2a\"/><path d=\"M18.2 25.4q1.8 1.6 3.6 0\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\" fill=\"none\"/><ellipse cx=\"12.5\" cy=\"25\" rx=\"2.2\" ry=\"1.3\" fill=\"#ffb3c1\"/><ellipse cx=\"27.5\" cy=\"25\" rx=\"2.2\" ry=\"1.3\" fill=\"#ffb3c1\"/><path d=\"M5 24h4M5 27l4-1M35 24h-4M35 27l-4-1\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>", "🐰": "<svg viewBox=\"0 0 40 40\" aria-hidden=\"true\"><rect x=\"12\" y=\"1.5\" width=\"5\" height=\"13\" rx=\"2.5\" fill=\"#fffdf7\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><rect x=\"23\" y=\"1.5\" width=\"5\" height=\"13\" rx=\"2.5\" fill=\"#fffdf7\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M14.5 5v6M25.5 5v6\" stroke=\"#ffb3c1\" stroke-width=\"2\" stroke-linecap=\"round\"/><path d=\"M7 27c0-9 5.8-16 13-16s13 7 13 16c0 3.5-5.8 5.5-13 5.5S7 30.5 7 27z\" fill=\"#fffdf7\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><circle cx=\"15.5\" cy=\"22\" r=\"1.7\" fill=\"#3a2e2a\"/><circle cx=\"24.5\" cy=\"22\" r=\"1.7\" fill=\"#3a2e2a\"/><path d=\"M18.2 25.4q1.8 1.6 3.6 0\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\" fill=\"none\"/><ellipse cx=\"12.5\" cy=\"25\" rx=\"2.2\" ry=\"1.3\" fill=\"#ffb3c1\"/><ellipse cx=\"27.5\" cy=\"25\" rx=\"2.2\" ry=\"1.3\" fill=\"#ffb3c1\"/></svg>", "🦄": "<svg viewBox=\"0 0 40 40\" aria-hidden=\"true\"><path d=\"M20 11l-2-9 4 0z\" fill=\"#ffe17a\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M26 12q5-1 6 4q-4-2-6-1z\" fill=\"#d6c6ff\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M7 27c0-9 5.8-16 13-16s13 7 13 16c0 3.5-5.8 5.5-13 5.5S7 30.5 7 27z\" fill=\"#fff7fb\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><circle cx=\"15.5\" cy=\"22\" r=\"1.7\" fill=\"#3a2e2a\"/><circle cx=\"24.5\" cy=\"22\" r=\"1.7\" fill=\"#3a2e2a\"/><path d=\"M18.2 25.4q1.8 1.6 3.6 0\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\" fill=\"none\"/><ellipse cx=\"12.5\" cy=\"25\" rx=\"2.2\" ry=\"1.3\" fill=\"#ffb3c1\"/><ellipse cx=\"27.5\" cy=\"25\" rx=\"2.2\" ry=\"1.3\" fill=\"#ffb3c1\"/></svg>", "🐙": "<svg viewBox=\"0 0 40 40\" aria-hidden=\"true\"><path d=\"M9 30q2 4 4 0q2 4 4 0q2 4 4 0q2 4 4 0q2 4 4 0\" fill=\"none\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M7 25c0-9 5.8-16 13-16s13 7 13 16c0 3-5.8 5-13 5S7 28 7 25z\" fill=\"#ffc7d4\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><circle cx=\"15.5\" cy=\"20\" r=\"1.7\" fill=\"#3a2e2a\"/><circle cx=\"24.5\" cy=\"20\" r=\"1.7\" fill=\"#3a2e2a\"/><path d=\"M18.2 23.4q1.8 1.6 3.6 0\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\" fill=\"none\"/><ellipse cx=\"12.5\" cy=\"23\" rx=\"2.2\" ry=\"1.3\" fill=\"#ffb3c1\"/><ellipse cx=\"27.5\" cy=\"23\" rx=\"2.2\" ry=\"1.3\" fill=\"#ffb3c1\"/></svg>", "🐆": "<svg viewBox=\"0 0 40 40\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"13.5\" r=\"3.2\" fill=\"#ffe08a\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><circle cx=\"28\" cy=\"13.5\" r=\"3.2\" fill=\"#ffe08a\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M7 27c0-9 5.8-16 13-16s13 7 13 16c0 3.5-5.8 5.5-13 5.5S7 30.5 7 27z\" fill=\"#ffe08a\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><circle cx=\"15.5\" cy=\"22\" r=\"1.7\" fill=\"#3a2e2a\"/><circle cx=\"24.5\" cy=\"22\" r=\"1.7\" fill=\"#3a2e2a\"/><path d=\"M18.2 25.4q1.8 1.6 3.6 0\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\" fill=\"none\"/><ellipse cx=\"12.5\" cy=\"25\" rx=\"2.2\" ry=\"1.3\" fill=\"#ffb3c1\"/><ellipse cx=\"27.5\" cy=\"25\" rx=\"2.2\" ry=\"1.3\" fill=\"#ffb3c1\"/><circle cx=\"13\" cy=\"17\" r=\"1.1\" fill=\"#b07a3a\"/><circle cx=\"27\" cy=\"16.5\" r=\"1.1\" fill=\"#b07a3a\"/><circle cx=\"20\" cy=\"14.5\" r=\"1.1\" fill=\"#b07a3a\"/><circle cx=\"29\" cy=\"28\" r=\"1.1\" fill=\"#b07a3a\"/><circle cx=\"11\" cy=\"28\" r=\"1.1\" fill=\"#b07a3a\"/></svg>", "🐬": "<svg viewBox=\"0 0 40 40\" aria-hidden=\"true\"><path d=\"M17 12l5-7 3 8z\" fill=\"#b9e0f7\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M7 27c0-9 5.8-16 13-16s13 7 13 16c0 3.5-5.8 5.5-13 5.5S7 30.5 7 27z\" fill=\"#b9e0f7\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><circle cx=\"15.5\" cy=\"22\" r=\"1.7\" fill=\"#3a2e2a\"/><circle cx=\"24.5\" cy=\"22\" r=\"1.7\" fill=\"#3a2e2a\"/><path d=\"M18.2 25.4q1.8 1.6 3.6 0\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\" fill=\"none\"/><ellipse cx=\"12.5\" cy=\"25\" rx=\"2.2\" ry=\"1.3\" fill=\"#ffb3c1\"/><ellipse cx=\"27.5\" cy=\"25\" rx=\"2.2\" ry=\"1.3\" fill=\"#ffb3c1\"/></svg>", "🐥": "<svg viewBox=\"0 0 40 40\" aria-hidden=\"true\"><path d=\"M18 11q1-5 3-4q-1 2 1 4\" fill=\"#ffe17a\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M7 27c0-9 5.8-16 13-16s13 7 13 16c0 3.5-5.8 5.5-13 5.5S7 30.5 7 27z\" fill=\"#ffe17a\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><circle cx=\"15.5\" cy=\"22\" r=\"1.7\" fill=\"#3a2e2a\"/><circle cx=\"24.5\" cy=\"22\" r=\"1.7\" fill=\"#3a2e2a\"/><ellipse cx=\"12.5\" cy=\"25\" rx=\"2.2\" ry=\"1.3\" fill=\"#ffb3c1\"/><ellipse cx=\"27.5\" cy=\"25\" rx=\"2.2\" ry=\"1.3\" fill=\"#ffb3c1\"/><circle cx=\"15.5\" cy=\"21\" r=\"1.7\" fill=\"#3a2e2a\"/><circle cx=\"24.5\" cy=\"21\" r=\"1.7\" fill=\"#3a2e2a\"/><path d=\"M18 24h4l-2 2.6z\" fill=\"#f5a04a\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><ellipse cx=\"12\" cy=\"25\" rx=\"2.2\" ry=\"1.3\" fill=\"#ffb3c1\"/><ellipse cx=\"28\" cy=\"25\" rx=\"2.2\" ry=\"1.3\" fill=\"#ffb3c1\"/></svg>", "🐒": "<svg viewBox=\"0 0 40 40\" aria-hidden=\"true\"><circle cx=\"7\" cy=\"21\" r=\"4\" fill=\"#f3d9bd\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><circle cx=\"33\" cy=\"21\" r=\"4\" fill=\"#f3d9bd\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M7 27c0-9 5.8-16 13-16s13 7 13 16c0 3.5-5.8 5.5-13 5.5S7 30.5 7 27z\" fill=\"#c99a72\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><ellipse cx=\"20\" cy=\"23.5\" rx=\"9\" ry=\"7.5\" fill=\"#f3d9bd\"/><circle cx=\"15.5\" cy=\"22\" r=\"1.7\" fill=\"#3a2e2a\"/><circle cx=\"24.5\" cy=\"22\" r=\"1.7\" fill=\"#3a2e2a\"/><path d=\"M18.2 25.4q1.8 1.6 3.6 0\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\" fill=\"none\"/><ellipse cx=\"12.5\" cy=\"25\" rx=\"2.2\" ry=\"1.3\" fill=\"#ffb3c1\"/><ellipse cx=\"27.5\" cy=\"25\" rx=\"2.2\" ry=\"1.3\" fill=\"#ffb3c1\"/></svg>", "🦁": "<svg viewBox=\"0 0 40 40\" aria-hidden=\"true\"><circle cx=\"20\" cy=\"21\" r=\"15\" fill=\"#f5a04a\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M9 25c0-7.5 5-13 11-13s11 5.5 11 13c0 3-5 4.5-11 4.5S9 28 9 25z\" fill=\"#ffe08a\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><circle cx=\"15.5\" cy=\"21\" r=\"1.7\" fill=\"#3a2e2a\"/><circle cx=\"24.5\" cy=\"21\" r=\"1.7\" fill=\"#3a2e2a\"/><path d=\"M18.2 24.4q1.8 1.6 3.6 0\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\" fill=\"none\"/><ellipse cx=\"12.5\" cy=\"24\" rx=\"2.2\" ry=\"1.3\" fill=\"#ffb3c1\"/><ellipse cx=\"27.5\" cy=\"24\" rx=\"2.2\" ry=\"1.3\" fill=\"#ffb3c1\"/></svg>", "🐶": "<svg viewBox=\"0 0 40 40\" aria-hidden=\"true\"><path d=\"M10 13q-6 2-4 11q3 0 5-5\" fill=\"#c99a72\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M30 13q6 2 4 11q-3 0-5-5\" fill=\"#c99a72\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M7 27c0-9 5.8-16 13-16s13 7 13 16c0 3.5-5.8 5.5-13 5.5S7 30.5 7 27z\" fill=\"#f6e3c8\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><circle cx=\"15.5\" cy=\"22\" r=\"1.7\" fill=\"#3a2e2a\"/><circle cx=\"24.5\" cy=\"22\" r=\"1.7\" fill=\"#3a2e2a\"/><path d=\"M18.2 25.4q1.8 1.6 3.6 0\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\" fill=\"none\"/><ellipse cx=\"12.5\" cy=\"25\" rx=\"2.2\" ry=\"1.3\" fill=\"#ffb3c1\"/><ellipse cx=\"27.5\" cy=\"25\" rx=\"2.2\" ry=\"1.3\" fill=\"#ffb3c1\"/><ellipse cx=\"20\" cy=\"25\" rx=\"1.8\" ry=\"1.3\" fill=\"#3a2e2a\"/></svg>", "🐘": "<svg viewBox=\"0 0 40 40\" aria-hidden=\"true\"><path d=\"M9 16q-7 1-5 10q3 3 6-1M31 16q7 1 5 10q-3 3-6-1\" fill=\"#d5dbe6\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M7 27c0-9 5.8-16 13-16s13 7 13 16c0 3.5-5.8 5.5-13 5.5S7 30.5 7 27z\" fill=\"#d5dbe6\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><circle cx=\"15.5\" cy=\"22\" r=\"1.7\" fill=\"#3a2e2a\"/><circle cx=\"24.5\" cy=\"22\" r=\"1.7\" fill=\"#3a2e2a\"/><path d=\"M18.2 25.4q1.8 1.6 3.6 0\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\" fill=\"none\"/><ellipse cx=\"12.5\" cy=\"25\" rx=\"2.2\" ry=\"1.3\" fill=\"#ffb3c1\"/><ellipse cx=\"27.5\" cy=\"25\" rx=\"2.2\" ry=\"1.3\" fill=\"#ffb3c1\"/><path d=\"M18.5 26v5q0 2 2 2\" fill=\"none\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>", "🐯": "<svg viewBox=\"0 0 40 40\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"13.5\" r=\"3.2\" fill=\"#ffc58a\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><circle cx=\"28\" cy=\"13.5\" r=\"3.2\" fill=\"#ffc58a\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M7 27c0-9 5.8-16 13-16s13 7 13 16c0 3.5-5.8 5.5-13 5.5S7 30.5 7 27z\" fill=\"#ffc58a\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><circle cx=\"15.5\" cy=\"22\" r=\"1.7\" fill=\"#3a2e2a\"/><circle cx=\"24.5\" cy=\"22\" r=\"1.7\" fill=\"#3a2e2a\"/><path d=\"M18.2 25.4q1.8 1.6 3.6 0\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\" fill=\"none\"/><ellipse cx=\"12.5\" cy=\"25\" rx=\"2.2\" ry=\"1.3\" fill=\"#ffb3c1\"/><ellipse cx=\"27.5\" cy=\"25\" rx=\"2.2\" ry=\"1.3\" fill=\"#ffb3c1\"/><path d=\"M20 12v3.5M16 13l1 2.5M24 13l-1 2.5M7.8 22h3M32.2 22h-3\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>", "😢": "<svg viewBox=\"0 0 40 40\" aria-hidden=\"true\"><circle cx=\"20\" cy=\"20\" r=\"14\" fill=\"#dcefff\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M14 18q1.8-1.6 3.6 0M22.4 18q1.8-1.6 3.6 0\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\" fill=\"none\"/><path d=\"M15 21q-1 3 0 4.5q1 -1.5 0 -4.5z\" fill=\"#7fc4f0\"/><path d=\"M18.2 23.6q1.8-1.4 3.6 0\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\" fill=\"none\"/><ellipse cx=\"12.5\" cy=\"22\" rx=\"2.2\" ry=\"1.3\" fill=\"#ffb3c1\"/><ellipse cx=\"27.5\" cy=\"22\" rx=\"2.2\" ry=\"1.3\" fill=\"#ffb3c1\"/></svg>", "😟": "<svg viewBox=\"0 0 40 40\" aria-hidden=\"true\"><circle cx=\"20\" cy=\"20\" r=\"14\" fill=\"#fff3d6\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><circle cx=\"15.5\" cy=\"19\" r=\"1.6\" fill=\"#3a2e2a\"/><circle cx=\"24.5\" cy=\"19\" r=\"1.6\" fill=\"#3a2e2a\"/><path d=\"M13 15.6l3 -1.4M27 15.6l-3 -1.4\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\" fill=\"none\"/><path d=\"M18.2 23.6q1.8-1.4 3.6 0\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\" fill=\"none\"/><ellipse cx=\"12.5\" cy=\"22\" rx=\"2.2\" ry=\"1.3\" fill=\"#ffb3c1\"/><ellipse cx=\"27.5\" cy=\"22\" rx=\"2.2\" ry=\"1.3\" fill=\"#ffb3c1\"/></svg>", "🙂": "<svg viewBox=\"0 0 40 40\" aria-hidden=\"true\"><circle cx=\"20\" cy=\"20\" r=\"14\" fill=\"#fff3d6\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><circle cx=\"15.5\" cy=\"19\" r=\"1.7\" fill=\"#3a2e2a\"/><circle cx=\"24.5\" cy=\"19\" r=\"1.7\" fill=\"#3a2e2a\"/><path d=\"M18.2 22.4q1.8 1.6 3.6 0\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\" fill=\"none\"/><ellipse cx=\"12.5\" cy=\"22\" rx=\"2.2\" ry=\"1.3\" fill=\"#ffb3c1\"/><ellipse cx=\"27.5\" cy=\"22\" rx=\"2.2\" ry=\"1.3\" fill=\"#ffb3c1\"/></svg>", "😐": "<svg viewBox=\"0 0 40 40\" aria-hidden=\"true\"><circle cx=\"20\" cy=\"20\" r=\"14\" fill=\"#f3ecff\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><circle cx=\"15.5\" cy=\"19\" r=\"1.7\" fill=\"#3a2e2a\"/><circle cx=\"24.5\" cy=\"19\" r=\"1.7\" fill=\"#3a2e2a\"/><path d=\"M18.2 23h3.6\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><ellipse cx=\"12.5\" cy=\"22\" rx=\"2.2\" ry=\"1.3\" fill=\"#ffb3c1\"/><ellipse cx=\"27.5\" cy=\"22\" rx=\"2.2\" ry=\"1.3\" fill=\"#ffb3c1\"/></svg>", "🤔": "<svg viewBox=\"0 0 40 40\" aria-hidden=\"true\"><circle cx=\"20\" cy=\"20\" r=\"14\" fill=\"#fff3d6\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><circle cx=\"15.5\" cy=\"19\" r=\"1.6\" fill=\"#3a2e2a\"/><circle cx=\"24.5\" cy=\"18\" r=\"1.6\" fill=\"#3a2e2a\"/><path d=\"M19 23h3\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><ellipse cx=\"12.5\" cy=\"22\" rx=\"2.2\" ry=\"1.3\" fill=\"#ffb3c1\"/><ellipse cx=\"27.5\" cy=\"22\" rx=\"2.2\" ry=\"1.3\" fill=\"#ffb3c1\"/></svg>", "🥺": "<svg viewBox=\"0 0 40 40\" aria-hidden=\"true\"><circle cx=\"20\" cy=\"20\" r=\"14\" fill=\"#ffe3ea\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><circle cx=\"15.5\" cy=\"19\" r=\"2.6\" fill=\"#3a2e2a\"/><circle cx=\"24.5\" cy=\"19\" r=\"2.6\" fill=\"#3a2e2a\"/><circle cx=\"16.2\" cy=\"18.1\" r=\".9\" fill=\"#fff\"/><circle cx=\"25.2\" cy=\"18.1\" r=\".9\" fill=\"#fff\"/><path d=\"M18.2 23.6q1.8-1.4 3.6 0\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\" fill=\"none\"/><ellipse cx=\"12.5\" cy=\"22\" rx=\"2.2\" ry=\"1.3\" fill=\"#ffb3c1\"/><ellipse cx=\"27.5\" cy=\"22\" rx=\"2.2\" ry=\"1.3\" fill=\"#ffb3c1\"/></svg>", "🤗": "<svg viewBox=\"0 0 40 40\" aria-hidden=\"true\"><circle cx=\"20\" cy=\"20\" r=\"14\" fill=\"#ffe17a\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><circle cx=\"15.5\" cy=\"19\" r=\"1.7\" fill=\"#3a2e2a\"/><circle cx=\"24.5\" cy=\"19\" r=\"1.7\" fill=\"#3a2e2a\"/><path d=\"M18.2 22.4q1.8 1.6 3.6 0\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\" fill=\"none\"/><ellipse cx=\"12.5\" cy=\"22\" rx=\"2.2\" ry=\"1.3\" fill=\"#ffb3c1\"/><ellipse cx=\"27.5\" cy=\"22\" rx=\"2.2\" ry=\"1.3\" fill=\"#ffb3c1\"/><path d=\"M6 26q3-2 6 0M34 26q-3-2-6 0\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\" fill=\"none\"/></svg>", "🔑": "<svg viewBox=\"0 0 40 40\" aria-hidden=\"true\"><rect x=\"16\" y=\"4.5\" width=\"8\" height=\"4\" rx=\"1.5\" fill=\"#fffdf7\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><rect x=\"10\" y=\"8\" width=\"20\" height=\"27\" rx=\"5\" fill=\"#fffdf7\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M12.4 22h15.2v8.8q0 2.6-2.6 2.6h-10q-2.6 0-2.6-2.6z\" fill=\"#8fdc9b\"/><rect x=\"10\" y=\"8\" width=\"20\" height=\"27\" rx=\"5\" fill=\"none\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M21.5 12l-5 8h4l-2 6.5 5.5-8.5h-4z\" fill=\"#ffe17a\" stroke=\"#3a2e2a\" stroke-width=\"1.8\" stroke-linejoin=\"round\"/></svg>", "📖": "<svg viewBox=\"0 0 40 40\" aria-hidden=\"true\"><path d=\"M20 11q-6-4-14-2v21q8-2 14 2zM20 11q6-4 14-2v21q-8-2-14 2z\" fill=\"#fff7e6\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M10 14q4-.5 6 .6M10 18q4-.5 6 .6M24 14.6q2-1.1 6-.6M24 18.6q2-1.1 6-.6\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>", "💬": "<svg viewBox=\"0 0 40 40\" aria-hidden=\"true\"><path d=\"M7 19c0-6.5 5.8-10 13-10s13 3.5 13 10-5.8 9.5-13 9.5c-1.7 0-3.3-.2-4.8-.6L9 31.5l1.8-5C8.4 24.6 7 22 7 19z\" fill=\"#ffd6de\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><circle cx=\"15\" cy=\"19\" r=\"1.6\" fill=\"#3a2e2a\"/><circle cx=\"20\" cy=\"19\" r=\"1.6\" fill=\"#3a2e2a\"/><circle cx=\"25\" cy=\"19\" r=\"1.6\" fill=\"#3a2e2a\"/></svg>", "🗣": "<svg viewBox=\"0 0 40 40\" aria-hidden=\"true\"><path d=\"M7 19c0-6.5 5.8-10 13-10s13 3.5 13 10-5.8 9.5-13 9.5c-1.7 0-3.3-.2-4.8-.6L9 31.5l1.8-5C8.4 24.6 7 22 7 19z\" fill=\"#dcefff\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><circle cx=\"15\" cy=\"19\" r=\"1.6\" fill=\"#3a2e2a\"/><circle cx=\"20\" cy=\"19\" r=\"1.6\" fill=\"#3a2e2a\"/><circle cx=\"25\" cy=\"19\" r=\"1.6\" fill=\"#3a2e2a\"/></svg>", "💭": "<svg viewBox=\"0 0 40 40\" aria-hidden=\"true\"><path d=\"M10 20c-3-4 1-9 6-7 2-4 9-4 11 0 5-1 7 5 4 8 2 4-3 7-7 5-2 3-9 3-11 0-4 1-6-3-3-6z\" fill=\"#fff\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><circle cx=\"9\" cy=\"31\" r=\"2\" fill=\"#fff\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><circle cx=\"5\" cy=\"35\" r=\"1.2\" fill=\"#fff\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>", "🎬": "<svg viewBox=\"0 0 40 40\" aria-hidden=\"true\"><rect x=\"7\" y=\"9\" width=\"26\" height=\"22\" rx=\"4\" fill=\"#fff3d6\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M12 15h16M12 20h12M12 25h8\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>", "📝": "<svg viewBox=\"0 0 40 40\" aria-hidden=\"true\"><rect x=\"8\" y=\"7\" width=\"20\" height=\"26\" rx=\"3\" fill=\"#fffdf7\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M12 14h12M12 19h12M12 24h7\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M27 21l6-6 3 3-6 6-4 1z\" fill=\"#ffe17a\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>", "✏": "<svg viewBox=\"0 0 40 40\" aria-hidden=\"true\"><path d=\"M10 30l2-7 15-15 5 5-15 15z\" fill=\"#ffe17a\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M24 11l5 5M10 30l2-7 5 5z\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\" fill=\"#ffd6de\"/></svg>", "✉": "<svg viewBox=\"0 0 40 40\" aria-hidden=\"true\"><rect x=\"6\" y=\"11\" width=\"28\" height=\"19\" rx=\"3\" fill=\"#fffdf7\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M7 13l13 9 13-9\" fill=\"none\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>", "💌": "<svg viewBox=\"0 0 40 40\" aria-hidden=\"true\"><rect x=\"6\" y=\"11\" width=\"28\" height=\"19\" rx=\"3\" fill=\"#fffdf7\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M7 13l13 9 13-9\" fill=\"none\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M20 26s-4-2.4-4-5c0-1.4 1.1-2.4 2.3-2.4.8 0 1.4.5 1.7 1 .3-.5.9-1 1.7-1 1.2 0 2.3 1 2.3 2.4 0 2.6-4 5-4 5z\" fill=\"#f39bb0\" stroke=\"#3a2e2a\" stroke-width=\"1.6\"/></svg>", "💗": "<svg viewBox=\"0 0 40 40\" aria-hidden=\"true\"><path d=\"M20 32S7 24.5 7 16c0-4.2 3.2-7 6.8-7 2.8 0 4.9 1.6 6.2 3.6C21.3 10.6 23.4 9 26.2 9 29.8 9 33 11.8 33 16c0 8.5-13 16-13 16z\" fill=\"#ffc7d4\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>", "💛": "<svg viewBox=\"0 0 40 40\" aria-hidden=\"true\"><path d=\"M20 32S7 24.5 7 16c0-4.2 3.2-7 6.8-7 2.8 0 4.9 1.6 6.2 3.6C21.3 10.6 23.4 9 26.2 9 29.8 9 33 11.8 33 16c0 8.5-13 16-13 16z\" fill=\"#ffe17a\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>", "🎉": "<svg viewBox=\"0 0 40 40\" aria-hidden=\"true\"><path d=\"M8 33l6-18 13 13z\" fill=\"#ffe17a\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M22 8v4M30 12l-3 3M34 20h-4M27 5l1 2\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><circle cx=\"31\" cy=\"27\" r=\"1.6\" fill=\"#f39bb0\"/><circle cx=\"17\" cy=\"9\" r=\"1.4\" fill=\"#7fb3e6\"/></svg>", "✨": "<svg viewBox=\"0 0 40 40\" aria-hidden=\"true\"><path d=\"M18 6l2.5 7.5L28 16l-7.5 2.5L18 26l-2.5-7.5L8 16l7.5-2.5z\" fill=\"#ffe17a\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M30 24l1.2 3 3 1.2-3 1.2-1.2 3-1.2-3-3-1.2 3-1.2z\" fill=\"#fff\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>", "⭐": "<svg viewBox=\"0 0 40 40\" aria-hidden=\"true\"><path d=\"M18 6l2.5 7.5L28 16l-7.5 2.5L18 26l-2.5-7.5L8 16l7.5-2.5z\" fill=\"#ffe17a\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M30 24l1.2 3 3 1.2-3 1.2-1.2 3-1.2-3-3-1.2 3-1.2z\" fill=\"#fff\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>", "🎤": "<svg viewBox=\"0 0 40 40\" aria-hidden=\"true\"><rect x=\"15\" y=\"6\" width=\"10\" height=\"16\" rx=\"5\" fill=\"#d5dbe6\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M11 18q0 8 9 8t9-8M20 26v6M15 33h10\" fill=\"none\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>", "🔍": "<svg viewBox=\"0 0 40 40\" aria-hidden=\"true\"><circle cx=\"17\" cy=\"17\" r=\"9\" fill=\"#e8f3ff\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M24 24l8 8\" stroke=\"#3a2e2a\" stroke-width=\"4\" stroke-linecap=\"round\"/><path d=\"M13 14q2-3 5-3\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\" fill=\"none\"/></svg>", "✋": "<svg viewBox=\"0 0 40 40\" aria-hidden=\"true\"><path d=\"M13 33q-5-4-5-10l0-4q0-2 2-2t2 2v-9q0-2 2-2t2 2v-2q0-2 2-2t2 2v2q0-2 2-2t2 2v4q0-2 2-2t2 2v11q0 8-7 9z\" fill=\"#ffe3cf\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>", "👋": "<svg viewBox=\"0 0 40 40\" aria-hidden=\"true\"><path d=\"M13 33q-5-4-5-10l0-4q0-2 2-2t2 2v-9q0-2 2-2t2 2v-2q0-2 2-2t2 2v2q0-2 2-2t2 2v4q0-2 2-2t2 2v11q0 8-7 9z\" fill=\"#ffe3cf\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>", "🙏": "<svg viewBox=\"0 0 40 40\" aria-hidden=\"true\"><path d=\"M20 8q-3 2-6 10l-3 10 6 4 3-8zM20 8q3 2 6 10l3 10-6 4-3-8z\" fill=\"#ffe3cf\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>", "📱": "<svg viewBox=\"0 0 40 40\" aria-hidden=\"true\"><rect x=\"11\" y=\"5\" width=\"18\" height=\"30\" rx=\"4\" fill=\"#fffdf7\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M17 30h6\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><rect x=\"14\" y=\"9\" width=\"12\" height=\"17\" rx=\"1.5\" fill=\"#dcefff\"/></svg>", "🤝": "<svg viewBox=\"0 0 40 40\" aria-hidden=\"true\"><path d=\"M3 28c0-6 4-11 9-11s9 5 9 11c0 2.5-4 4-9 4s-9-1.5-9-4z\" fill=\"#fffdf7\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M19 28c0-6 4-11 9-11s9 5 9 11c0 2.5-4 4-9 4s-9-1.5-9-4z\" fill=\"#dcefff\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><circle cx=\"7.5\" cy=\"24\" r=\"1.7\" fill=\"#3a2e2a\"/><circle cx=\"16.5\" cy=\"24\" r=\"1.7\" fill=\"#3a2e2a\"/><path d=\"M10.2 27.4q1.8 1.6 3.6 0\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\" fill=\"none\"/><circle cx=\"23.5\" cy=\"24\" r=\"1.7\" fill=\"#3a2e2a\"/><circle cx=\"32.5\" cy=\"24\" r=\"1.7\" fill=\"#3a2e2a\"/><path d=\"M26.2 27.4q1.8 1.6 3.6 0\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\" fill=\"none\"/></svg>", "👥": "<svg viewBox=\"0 0 40 40\" aria-hidden=\"true\"><path d=\"M3 28c0-6 4-11 9-11s9 5 9 11c0 2.5-4 4-9 4s-9-1.5-9-4z\" fill=\"#fffdf7\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M19 28c0-6 4-11 9-11s9 5 9 11c0 2.5-4 4-9 4s-9-1.5-9-4z\" fill=\"#dcefff\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><circle cx=\"7.5\" cy=\"24\" r=\"1.7\" fill=\"#3a2e2a\"/><circle cx=\"16.5\" cy=\"24\" r=\"1.7\" fill=\"#3a2e2a\"/><path d=\"M10.2 27.4q1.8 1.6 3.6 0\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\" fill=\"none\"/><circle cx=\"23.5\" cy=\"24\" r=\"1.7\" fill=\"#3a2e2a\"/><circle cx=\"32.5\" cy=\"24\" r=\"1.7\" fill=\"#3a2e2a\"/><path d=\"M26.2 27.4q1.8 1.6 3.6 0\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\" fill=\"none\"/></svg>", "🧭": "<svg viewBox=\"0 0 40 40\" aria-hidden=\"true\"><circle cx=\"20\" cy=\"20\" r=\"13\" fill=\"#fff3d6\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M20 10l4 10-4 10-4-10z\" fill=\"#f39bb0\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><circle cx=\"20\" cy=\"20\" r=\"1.8\" fill=\"#3a2e2a\"/></svg>", "👀": "<svg viewBox=\"0 0 40 40\" aria-hidden=\"true\"><ellipse cx=\"13\" cy=\"20\" rx=\"6\" ry=\"8\" fill=\"#fff\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><ellipse cx=\"27\" cy=\"20\" rx=\"6\" ry=\"8\" fill=\"#fff\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><circle cx=\"14.5\" cy=\"22\" r=\"2.6\" fill=\"#3a2e2a\"/><circle cx=\"28.5\" cy=\"22\" r=\"2.6\" fill=\"#3a2e2a\"/></svg>", "💡": "<svg viewBox=\"0 0 40 40\" aria-hidden=\"true\"><path d=\"M20 5c-6.5 0-10 4.5-10 9.5 0 4 2.5 6 4 8v4h12v-4c1.5-2 4-4 4-8C30 9.5 26.5 5 20 5z\" fill=\"#ffe17a\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M15 30h10M16.5 34h7\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>", "📌": "<svg viewBox=\"0 0 40 40\" aria-hidden=\"true\"><circle cx=\"20\" cy=\"13\" r=\"7\" fill=\"#f39bb0\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M20 20v14\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>", "🤖": "<svg viewBox=\"0 0 40 40\" aria-hidden=\"true\"><rect x=\"8\" y=\"12\" width=\"24\" height=\"19\" rx=\"6\" fill=\"#dcefff\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M20 12V7\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><circle cx=\"20\" cy=\"6\" r=\"2\" fill=\"#ffe17a\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><circle cx=\"15.5\" cy=\"21\" r=\"1.7\" fill=\"#3a2e2a\"/><circle cx=\"24.5\" cy=\"21\" r=\"1.7\" fill=\"#3a2e2a\"/><path d=\"M18.2 24.4q1.8 1.6 3.6 0\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\" fill=\"none\"/><ellipse cx=\"12.5\" cy=\"24\" rx=\"2.2\" ry=\"1.3\" fill=\"#ffb3c1\"/><ellipse cx=\"27.5\" cy=\"24\" rx=\"2.2\" ry=\"1.3\" fill=\"#ffb3c1\"/></svg>", "🙋": "<svg viewBox=\"0 0 40 40\" aria-hidden=\"true\"><path d=\"M29 15l3-9\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\"/><circle cx=\"32.5\" cy=\"5.5\" r=\"2.5\" fill=\"#fffdf7\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M7 27c0-9 5.8-16 13-16s13 7 13 16c0 3.5-5.8 5.5-13 5.5S7 30.5 7 27z\" fill=\"#fffdf7\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><circle cx=\"15.5\" cy=\"22\" r=\"1.7\" fill=\"#3a2e2a\"/><circle cx=\"24.5\" cy=\"22\" r=\"1.7\" fill=\"#3a2e2a\"/><path d=\"M18.2 25.4q1.8 1.6 3.6 0\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\" fill=\"none\"/><ellipse cx=\"12.5\" cy=\"25\" rx=\"2.2\" ry=\"1.3\" fill=\"#ffb3c1\"/><ellipse cx=\"27.5\" cy=\"25\" rx=\"2.2\" ry=\"1.3\" fill=\"#ffb3c1\"/></svg>", "🧑‍🏫": "<svg viewBox=\"0 0 40 40\" aria-hidden=\"true\"><path d=\"M9 17q2-8 11-8t11 8q-6-3-11-3t-11 3z\" fill=\"#8a6a55\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M7 27c0-9 5.8-16 13-16s13 7 13 16c0 3.5-5.8 5.5-13 5.5S7 30.5 7 27z\" fill=\"#fff3d6\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><circle cx=\"15.5\" cy=\"22\" r=\"1.7\" fill=\"#3a2e2a\"/><circle cx=\"24.5\" cy=\"22\" r=\"1.7\" fill=\"#3a2e2a\"/><ellipse cx=\"12.5\" cy=\"25\" rx=\"2.2\" ry=\"1.3\" fill=\"#ffb3c1\"/><ellipse cx=\"27.5\" cy=\"25\" rx=\"2.2\" ry=\"1.3\" fill=\"#ffb3c1\"/><circle cx=\"15.5\" cy=\"22\" r=\"3.2\" fill=\"none\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><circle cx=\"24.5\" cy=\"22\" r=\"3.2\" fill=\"none\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M18.7 22h2.6M18.5 27q1.5 1.3 3 0\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\" fill=\"none\"/></svg>", "🏫": "<svg viewBox=\"0 0 40 40\" aria-hidden=\"true\"><path d=\"M6 33V18l14-9 14 9v15z\" fill=\"#fff3d6\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><rect x=\"17\" y=\"24\" width=\"6\" height=\"9\" fill=\"#ffd6de\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><circle cx=\"20\" cy=\"17\" r=\"2.5\" fill=\"#fff\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>", "🏘": "<svg viewBox=\"0 0 40 40\" aria-hidden=\"true\"><path d=\"M5 33V19l8-7 8 7v14zM21 33V22l7-6 7 6v11z\" fill=\"#fff3d6\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><rect x=\"11\" y=\"25\" width=\"4\" height=\"8\" fill=\"#ffd6de\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>", "🏡": "<svg viewBox=\"0 0 40 40\" aria-hidden=\"true\"><path d=\"M7 33V18L20 8l13 10v15z\" fill=\"#ffe8cc\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><rect x=\"17\" y=\"23\" width=\"7\" height=\"10\" fill=\"#bfe3b4\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M4 20L20 7l16 13\" fill=\"none\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>", "🏰": "<svg viewBox=\"0 0 40 40\" aria-hidden=\"true\"><path d=\"M7 33V13h4v3h4v-3h10v3h4v-3h4v20z\" fill=\"#f0eaff\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M17 33v-7q3-4 6 0v7\" fill=\"#ffd6de\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>", "🌉": "<svg viewBox=\"0 0 40 40\" aria-hidden=\"true\"><path d=\"M3 26q17-14 34 0\" fill=\"none\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M3 26h34M10 26v7M30 26v7M3 33h34\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M14 20v6M20 18v8M26 20v6\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>", "🌈": "<svg viewBox=\"0 0 40 40\" aria-hidden=\"true\"><path d=\"M5 30a15 15 0 0 1 30 0\" fill=\"none\" stroke=\"#f39bb0\" stroke-width=\"4\"/><path d=\"M10 30a10 10 0 0 1 20 0\" fill=\"none\" stroke=\"#ffe17a\" stroke-width=\"4\"/><path d=\"M15 30a5 5 0 0 1 10 0\" fill=\"none\" stroke=\"#7fb3e6\" stroke-width=\"4\"/></svg>", "🏮": "<svg viewBox=\"0 0 40 40\" aria-hidden=\"true\"><path d=\"M20 4v4\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><ellipse cx=\"20\" cy=\"20\" rx=\"10\" ry=\"12\" fill=\"#ffb59a\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M15 8h10M15 32h10M20 8v24\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>", "🌫": "<svg viewBox=\"0 0 40 40\" aria-hidden=\"true\"><path d=\"M6 13h22M10 20h24M6 27h20\" stroke=\"#9aa3ad\" stroke-width=\"3\" stroke-linecap=\"round\"/></svg>", "☀": "<svg viewBox=\"0 0 40 40\" aria-hidden=\"true\"><circle cx=\"20\" cy=\"20\" r=\"7\" fill=\"#ffe17a\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M20 5v4M20 31v4M5 20h4M31 20h4M9.5 9.5l3 3M27.5 27.5l3 3M30.5 9.5l-3 3M12.5 27.5l-3 3\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>", "⛅": "<svg viewBox=\"0 0 40 40\" aria-hidden=\"true\"><circle cx=\"15\" cy=\"15\" r=\"6\" fill=\"#ffe17a\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M12 31c-4 0-6-3-5-6s4-4 6-3c1-4 5-6 9-5s6 4 6 7c3 0 5 2 5 4s-2 3-4 3z\" fill=\"#fff\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>", "🌧": "<svg viewBox=\"0 0 40 40\" aria-hidden=\"true\"><path d=\"M11 24c-4 0-6-3-5-6s4-4 6-3c1-4 5-6 9-5s6 4 6 7c3 0 5 2 5 4s-2 3-4 3z\" fill=\"#e8f3ff\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M13 29l-1.5 4M20 29l-1.5 4M27 29l-1.5 4\" stroke=\"#7fb3e6\" stroke-width=\"2.4\" stroke-linecap=\"round\"/></svg>", "⚡": "<svg viewBox=\"0 0 40 40\" aria-hidden=\"true\"><path d=\"M23 4L9 23h9l-3 13 15-20h-9z\" fill=\"#ffe17a\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>", "🌀": "<svg viewBox=\"0 0 40 40\" aria-hidden=\"true\"><path d=\"M20 20c0-2 2-3 3-2s1 4-2 5-6-1-6-5 4-8 9-7 9 6 7 11-8 8-13 6\" fill=\"none\" stroke=\"#7fb3e6\" stroke-width=\"3\" stroke-linecap=\"round\"/></svg>", "🕊": "<svg viewBox=\"0 0 40 40\" aria-hidden=\"true\"><path d=\"M6 22q8-2 12-12q2 7 0 12q8-8 16-6q-4 12-16 13l-5 4 1-5q-5-1-8-6z\" fill=\"#fffdf7\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><circle cx=\"24\" cy=\"19\" r=\"1.3\" fill=\"#3a2e2a\"/></svg>", "❓": "<svg viewBox=\"0 0 40 40\" aria-hidden=\"true\"><circle cx=\"20\" cy=\"20\" r=\"14\" fill=\"#f0eaff\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M15.5 16q0-5 4.5-5t4.5 4.5q0 3-4.5 4.5v3\" fill=\"none\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><circle cx=\"20\" cy=\"28\" r=\"1.6\" fill=\"#3a2e2a\"/></svg>", "🆘": "<svg viewBox=\"0 0 40 40\" aria-hidden=\"true\"><circle cx=\"20\" cy=\"20\" r=\"14\" fill=\"#ffd6de\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M20 11v11\" stroke=\"#3a2e2a\" stroke-width=\"3.2\" stroke-linecap=\"round\"/><circle cx=\"20\" cy=\"28\" r=\"2\" fill=\"#3a2e2a\"/></svg>", "🪞": "<svg viewBox=\"0 0 40 40\" aria-hidden=\"true\"><ellipse cx=\"20\" cy=\"17\" rx=\"10\" ry=\"12\" fill=\"#e8f3ff\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M16 12q2-3 5-3\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\" fill=\"none\"/><path d=\"M20 29v5M15 35h10\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>", "🌱": "<svg viewBox=\"0 0 40 40\" aria-hidden=\"true\"><path d=\"M20 34V20\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M20 21q-11 1-12-9q11-1 12 9zM20 18q1-10 12-10q0 11-12 10z\" fill=\"#bfe3b4\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>", "🌡": "<svg viewBox=\"0 0 40 40\" aria-hidden=\"true\"><rect x=\"16\" y=\"5\" width=\"8\" height=\"22\" rx=\"4\" fill=\"#fff\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><circle cx=\"20\" cy=\"29\" r=\"6\" fill=\"#f39bb0\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M20 27v-14\" stroke=\"#f39bb0\" stroke-width=\"3\" stroke-linecap=\"round\"/></svg>", "⏰": "<svg viewBox=\"0 0 40 40\" aria-hidden=\"true\"><circle cx=\"20\" cy=\"21\" r=\"12\" fill=\"#fff3d6\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M20 14v7l5 3M8 10l5-4M32 10l-5-4\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\" fill=\"none\"/></svg>", "✓": "<svg viewBox=\"0 0 40 40\" aria-hidden=\"true\"><path d=\"M9 21l7 7 15-16\" fill=\"none\" stroke=\"#5fb36d\" stroke-width=\"4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>", "✅": "<svg viewBox=\"0 0 40 40\" aria-hidden=\"true\"><rect x=\"6\" y=\"6\" width=\"28\" height=\"28\" rx=\"8\" fill=\"#dff3e4\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M9 21l7 7 15-16\" fill=\"none\" stroke=\"#5fb36d\" stroke-width=\"4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>", "❌": "<svg viewBox=\"0 0 40 40\" aria-hidden=\"true\"><rect x=\"6\" y=\"6\" width=\"28\" height=\"28\" rx=\"8\" fill=\"#ffd6de\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M14 14l12 12M26 14L14 26\" stroke=\"#3a2e2a\" stroke-width=\"3\" stroke-linecap=\"round\"/></svg>", "🔧": "<svg viewBox=\"0 0 40 40\" aria-hidden=\"true\"><path d=\"M26 6a7 7 0 0 0-6 10L8 28l4 4 12-12a7 7 0 0 0 10-6l-4 2-3-3 2-4a7 7 0 0 0-3-3z\" fill=\"#d5dbe6\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>", "⚙": "<svg viewBox=\"0 0 40 40\" aria-hidden=\"true\"><circle cx=\"20\" cy=\"20\" r=\"9\" fill=\"#d5dbe6\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><circle cx=\"20\" cy=\"20\" r=\"3\" fill=\"#fff\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M20 5v5M20 30v5M5 20h5M30 20h5M9 9l3.5 3.5M27.5 27.5L31 31M31 9l-3.5 3.5M12.5 27.5L9 31\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>", "🔒": "<svg viewBox=\"0 0 40 40\" aria-hidden=\"true\"><rect x=\"9\" y=\"17\" width=\"22\" height=\"17\" rx=\"4\" fill=\"#ffe17a\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M14 17v-4a6 6 0 0 1 12 0v4\" fill=\"none\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>", "🗺": "<svg viewBox=\"0 0 40 40\" aria-hidden=\"true\"><path d=\"M5 10l9-3 12 4 9-3v23l-9 3-12-4-9 3z\" fill=\"#fff3d6\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M14 7v23M26 11v23\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>", "🏆": "<svg viewBox=\"0 0 40 40\" aria-hidden=\"true\"><rect x=\"16\" y=\"4.5\" width=\"8\" height=\"4\" rx=\"1.5\" fill=\"#fffdf7\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><rect x=\"10\" y=\"8\" width=\"20\" height=\"27\" rx=\"5\" fill=\"#fffdf7\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M12.4 22h15.2v8.8q0 2.6-2.6 2.6h-10q-2.6 0-2.6-2.6z\" fill=\"#8fdc9b\"/><rect x=\"10\" y=\"8\" width=\"20\" height=\"27\" rx=\"5\" fill=\"none\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M21.5 12l-5 8h4l-2 6.5 5.5-8.5h-4z\" fill=\"#ffe17a\" stroke=\"#3a2e2a\" stroke-width=\"1.8\" stroke-linejoin=\"round\"/></svg>", "📍": "<svg viewBox=\"0 0 40 40\" aria-hidden=\"true\"><circle cx=\"20\" cy=\"13\" r=\"7\" fill=\"#f39bb0\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M20 20v14\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>", "🔓": "<svg viewBox=\"0 0 40 40\" aria-hidden=\"true\"><rect x=\"16\" y=\"4.5\" width=\"8\" height=\"4\" rx=\"1.5\" fill=\"#fffdf7\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><rect x=\"10\" y=\"8\" width=\"20\" height=\"27\" rx=\"5\" fill=\"#fffdf7\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M12.4 22h15.2v8.8q0 2.6-2.6 2.6h-10q-2.6 0-2.6-2.6z\" fill=\"#8fdc9b\"/><rect x=\"10\" y=\"8\" width=\"20\" height=\"27\" rx=\"5\" fill=\"none\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M21.5 12l-5 8h4l-2 6.5 5.5-8.5h-4z\" fill=\"#ffe17a\" stroke=\"#3a2e2a\" stroke-width=\"1.8\" stroke-linejoin=\"round\"/></svg>", "🔋": "<svg viewBox=\"0 0 40 40\" aria-hidden=\"true\"><rect x=\"16\" y=\"4.5\" width=\"8\" height=\"4\" rx=\"1.5\" fill=\"#fffdf7\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><rect x=\"10\" y=\"8\" width=\"20\" height=\"27\" rx=\"5\" fill=\"#fffdf7\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M12.4 22h15.2v8.8q0 2.6-2.6 2.6h-10q-2.6 0-2.6-2.6z\" fill=\"#8fdc9b\"/><rect x=\"10\" y=\"8\" width=\"20\" height=\"27\" rx=\"5\" fill=\"none\" stroke=\"#3a2e2a\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M21.5 12l-5 8h4l-2 6.5 5.5-8.5h-4z\" fill=\"#ffe17a\" stroke=\"#3a2e2a\" stroke-width=\"1.8\" stroke-linejoin=\"round\"/></svg>"};
+const ICO_RE=new RegExp("("+Object.keys(ICONS).sort((a,b)=>b.length-a.length).map(k=>k.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")).join("|")+")\uFE0F?","gu");
+const SKIP={SCRIPT:1,STYLE:1,TEXTAREA:1,INPUT:1,OPTION:1,TITLE:1};
+function icoNode(t){ICO_RE.lastIndex=0;if(!ICO_RE.test(t.nodeValue))return;ICO_RE.lastIndex=0;
+  const f=document.createDocumentFragment();let last=0,m;const v=t.nodeValue;
+  while((m=ICO_RE.exec(v))){if(m.index>last)f.appendChild(document.createTextNode(v.slice(last,m.index)));
+    const sp=document.createElement("span");sp.className="ico";sp.innerHTML=ICONS[m[1]];f.appendChild(sp);last=m.index+m[0].length}
+  if(last<v.length)f.appendChild(document.createTextNode(v.slice(last)));t.parentNode.replaceChild(f,t)}
+function icoWalk(root){if(root.nodeType===3){if(root.parentNode&&!SKIP[root.parentNode.nodeName]&&!root.parentNode.closest("svg"))icoNode(root);return}
+  if(root.nodeType!==1||SKIP[root.nodeName]||root.nodeName==="svg")return;
+  const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,{acceptNode:n=>SKIP[n.parentNode.nodeName]||n.parentNode.closest("svg")?2:1});const list=[];while(w.nextNode())list.push(w.currentNode);list.forEach(icoNode)}
+icoWalk(document.body);
+new MutationObserver(ms=>ms.forEach(m=>{if(m.type==="characterData")icoWalk(m.target);else m.addedNodes.forEach(icoWalk)})).observe(document.body,{childList:true,subtree:true,characterData:true});
+drawKiki();
+if(location.hash==="#setup") openSetup();
+window.addEventListener("hashchange",()=>{if(location.hash==="#setup")openSetup()});
+
+</script>
+</body>
+</html>
